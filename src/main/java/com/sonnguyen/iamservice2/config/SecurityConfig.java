@@ -31,11 +31,11 @@ public class SecurityConfig {
     public SecurityFilterChain configSecurityWithExternalIdp(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(request -> {
             request
-                    .requestMatchers("/api/v1/user/**"
-                            , "/api/v1/auth/**").permitAll()
+                    .requestMatchers("/api/v1/auth/**").permitAll()
                     .anyRequest().authenticated();
         }).oauth2Login(oauth2Login -> oauth2Login.successHandler(oauth2SuccessHandler));
         http.csrf(AbstractHttpConfigurer::disable);
+        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
@@ -44,8 +44,7 @@ public class SecurityConfig {
     public SecurityFilterChain configSecurity(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(request -> {
             request
-                    .requestMatchers("/api/v1/user/**"
-                            , "/api/v1/auth/**").permitAll()
+                    .requestMatchers("/api/v1/auth/**").permitAll()
                     .anyRequest().authenticated();
         }).oauth2Login(AbstractHttpConfigurer::disable);
         http.csrf(AbstractHttpConfigurer::disable);
