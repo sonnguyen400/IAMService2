@@ -58,7 +58,13 @@ public class KeycloakAccountServiceImpl implements AccountService {
 
 
 
-
+    @Override
+    public void updateLockedStatusByEmail(Boolean isLocked, String email) {
+        UserRepresentation user=findByEmail(email);
+        user.setEnabled(!isLocked);
+        UserResource userResource=keycloak.realm(realm).users().get(user.getId());
+        userResource.update(user);
+    }
     public void createKeycloakUser(Account account) {
         UserRepresentation userRepresentation = mapAccount(account);
         try (Response response = keycloak.realm(realm).users().create(userRepresentation)) {

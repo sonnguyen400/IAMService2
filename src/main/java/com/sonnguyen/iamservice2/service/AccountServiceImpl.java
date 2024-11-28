@@ -33,7 +33,11 @@ public class AccountServiceImpl implements AccountService {
         account.setPassword(passwordEncoder.encode(account.getPassword()));
         accountRepository.save(account);
     }
-
+    @Override
+    @Transactional
+    public void updateLockedStatusByEmail(Boolean isLocked, String email) {
+        accountRepository.updateAccountLockStatusByEmail(isLocked,email);
+    }
     @Override
     public void create(UserCreationPostVm userCreationPostVm) {
         if(accountRepository.existsAccountByEmail(userCreationPostVm.email())){

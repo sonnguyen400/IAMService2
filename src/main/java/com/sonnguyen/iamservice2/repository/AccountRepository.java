@@ -15,4 +15,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     @Modifying
     @Query("update Account a set a.verified=true where a.email=?1")
     void verifiedAccountByEmail(String email);
+    @Modifying
+    @Query("update Account a set a.locked=?1 where a.email=?2")
+    void updateAccountLockStatusByEmail(Boolean lockedStatus,String email);
 }

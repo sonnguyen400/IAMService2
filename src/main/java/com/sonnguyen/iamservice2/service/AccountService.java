@@ -6,5 +6,5 @@ import com.sonnguyen.iamservice2.viewmodel.UserRegistrationPostVm;
 public interface AccountService {
     void register(UserRegistrationPostVm userRegistrationPostVm);
     void create(UserCreationPostVm userRegistrationPostVm);
-
+    void updateLockedStatusByEmail(Boolean isLocked,String email);
 }

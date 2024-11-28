@@ -15,4 +15,8 @@ public class UserManagementController {
     public void createNewUser(@RequestBody UserCreationPostVm userCreationPostVm){
         accountService.create(userCreationPostVm);
     }
+    @PostMapping(value = "/lock")
+    public void updateAccountLockStatus(@RequestParam Boolean lock,@RequestParam String email){
+        accountService.updateLockedStatusByEmail(lock,email);
+    }
 }
