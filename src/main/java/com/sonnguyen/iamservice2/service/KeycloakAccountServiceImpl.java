@@ -20,24 +20,30 @@ import java.util.List;
         value = "keycloak.enable",
         havingValue = "true"
 )
-public class KeycloakUserServiceImpl implements UserService {
+public class KeycloakAccountServiceImpl implements AccountService {
     @Value("${keycloak.user_management.registration.realm}")
     private String realm;
     @Autowired
     private Keycloak keycloak;
     @Autowired
-    private UserServiceImpl userServiceImpl;
+    private AccountServiceImpl accountServiceImpl;
 
     @Override
     public void createUser(UserRegistrationPostVm user) {
         createKeycloakUser(user);
-        userServiceImpl.createUser(user);
+        accountServiceImpl.createUser(user);
+    }
+
+    @Override
+    public void enableAccountByEmail(String email) {
+
     }
 
     public void createKeycloakUser(UserRegistrationPostVm userRegistrationPostVm) {
 
         UserRepresentation userRepresentation = mapUserRegistrationPostVm(userRegistrationPostVm);
         try (Response response = keycloak.realm(realm).users().create(userRepresentation)) {
+            System.out.println(response.readEntity(String.class));
             if (response.getStatus() != Response.Status.CREATED.getStatusCode()) {
                 throw new KeycloakException("Keycloak user creation failed");
             }
@@ -50,10 +56,8 @@ public class KeycloakUserServiceImpl implements UserService {
 
         //User's base profile
         UserRepresentation userRepresentation = new UserRepresentation();
-        userRepresentation.setUsername(userRegistrationPostVm.username());
+        userRepresentation.setUsername(userRegistrationPostVm.email());
         userRepresentation.setEmail(userRegistrationPostVm.email());
-        userRepresentation.setFirstName(userRegistrationPostVm.firstname());
-        userRepresentation.setLastName(userRegistrationPostVm.lastname());
         userRepresentation.setEnabled(true);
 
         //User's credentials information

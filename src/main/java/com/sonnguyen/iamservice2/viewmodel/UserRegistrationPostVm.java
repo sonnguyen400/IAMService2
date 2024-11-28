@@ -1,21 +1,15 @@
 package com.sonnguyen.iamservice2.viewmodel;
 
-import com.sonnguyen.iamservice2.model.User;
+import com.sonnguyen.iamservice2.model.Account;
 
 public record UserRegistrationPostVm(
-        String username,
         String password,
-        String email,
-        String firstname,
-        String lastname
+        String email
 ) {
-    public User toEntity() {
-        return User.builder()
-                .username(username)
+    public Account toEntity() {
+        return Account.builder()
                 .password(password)
                 .email(email)
-                .firstname(firstname)
-                .lastname(lastname)
                 .build();
     }
 }

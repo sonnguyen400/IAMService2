@@ -1,6 +1,8 @@
 package com.sonnguyen.iamservice2.security;
 
+import com.sonnguyen.iamservice2.exception.TokenException;
 import com.sonnguyen.iamservice2.service.AuthenticationServiceImpl;
+import com.sonnguyen.iamservice2.service.ForbiddenTokenService;
 import com.sonnguyen.iamservice2.utils.JWTUtilsImpl;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -26,6 +28,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class JwtFilterImpl extends OncePerRequestFilter implements JwtFilter {
     JWTUtilsImpl jwtUtils;
+    ForbiddenTokenService forbiddenTokenService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -41,6 +44,7 @@ public class JwtFilterImpl extends OncePerRequestFilter implements JwtFilter {
     private Claims validateToken(HttpServletRequest request) {
         try {
             String token = extractBearerTokenFromRequestHeader(request);
+            if(forbiddenTokenService.findToken(token) != null) throw new TokenException("Invalid token");
             return jwtUtils.validateToken(token);
         } catch (Exception e) {
             return null;
