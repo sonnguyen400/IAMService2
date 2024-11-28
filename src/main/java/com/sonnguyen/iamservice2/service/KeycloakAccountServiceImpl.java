@@ -21,10 +21,7 @@ import java.util.Map;
 
 @Service
 @Primary
-@ConditionalOnProperty(
-        value = "keycloak.enable",
-        havingValue = "true"
-)
+@ConditionalOnProperty(name = "default-idp",havingValue = "KEYCLOAK")
 @Slf4j
 public class KeycloakAccountServiceImpl implements AccountService {
     @Value("${keycloak.user_management.registration.realm}")
@@ -39,7 +36,9 @@ public class KeycloakAccountServiceImpl implements AccountService {
         Account account=userRegistrationPostVm.toEntity();
         account.setLocked(false);
         createKeycloakUser(account);
-        accountServiceImpl.register(userRegistrationPostVm);
+        if(accountServiceImpl.findByEmail(userRegistrationPostVm.email()).isEmpty()){
+            accountServiceImpl.register(userRegistrationPostVm);
+        }
     }
 
     @Override
@@ -54,8 +53,6 @@ public class KeycloakAccountServiceImpl implements AccountService {
         }
         return users.getFirst();
     }
-
-
 
 
     @Override
@@ -86,13 +83,6 @@ public class KeycloakAccountServiceImpl implements AccountService {
         userRepresentation.setFirstName(account.getFirstName());
         userRepresentation.setLastName(account.getLastName());
 
-        userRepresentation.setAttributes(
-                Map.of(
-                        "picture_url",List.of(account.getPicture()),
-                        "phone",List.of(account.getPhone()),
-                        "address",List.of(account.getAddress())
-                )
-        );
 
         userRepresentation.setEnabled(!account.getLocked());
 

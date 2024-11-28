@@ -4,6 +4,9 @@ import com.sonnguyen.iamservice2.service.AccountService;
 import com.sonnguyen.iamservice2.service.AccountServiceImpl;
 import com.sonnguyen.iamservice2.viewmodel.UserCreationPostVm;
 import com.sonnguyen.iamservice2.viewmodel.UserDetailGetVm;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,10 +15,10 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/user")
+@FieldDefaults(makeFinal = true,level = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 public class UserManagementController {
-    @Autowired
     AccountService accountService;
-    @Autowired
     AccountServiceImpl accountServiceImpl;
 
     @PostMapping

@@ -7,6 +7,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -90,6 +91,24 @@ public class RestExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseMessage handleResourceNotFoundException(ResourceNotFoundException e) {
+        return ResponseMessage
+                .builder()
+                .status(ResponseMessageStatus.FAIL.status)
+                .message(e.getMessage())
+                .build();
+    }
+    @ExceptionHandler(KeycloakException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseMessage handleKeycloakAdminException(KeycloakException e) {
+        return ResponseMessage
+                .builder()
+                .status(ResponseMessageStatus.FAIL.status)
+                .message(e.getMessage())
+                .build();
+    }
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseMessage handleAccessDeniedException(AccessDeniedException e) {
         return ResponseMessage
                 .builder()
                 .status(ResponseMessageStatus.FAIL.status)

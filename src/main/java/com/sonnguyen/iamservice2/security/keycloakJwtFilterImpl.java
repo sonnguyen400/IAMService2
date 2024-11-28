@@ -26,13 +26,12 @@ import java.io.IOException;
 @Component
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
-@ConditionalOnProperty(value = "keycloak.enable",havingValue = "true")
+@ConditionalOnProperty(name = "default-idp",havingValue = "KEYCLOAK")
 @Primary
 @Slf4j
 public class keycloakJwtFilterImpl extends OncePerRequestFilter implements JwtFilter {
     JwtDecoder jwtDecoder;
     UserDetailsService userDetailsService;
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         Jwt jwt = validateToken(request);
@@ -48,7 +47,6 @@ public class keycloakJwtFilterImpl extends OncePerRequestFilter implements JwtFi
         }
         filterChain.doFilter(request, response);
     }
-
     public Jwt validateToken(HttpServletRequest request) {
         try{
             String token = extractBearerTokenFromRequestHeader(request);
@@ -56,7 +54,5 @@ public class keycloakJwtFilterImpl extends OncePerRequestFilter implements JwtFi
         }catch(Exception e){
             return null;
         }
-
-
     }
 }
