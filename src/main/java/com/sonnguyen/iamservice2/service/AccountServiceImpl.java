@@ -4,11 +4,14 @@ import com.sonnguyen.iamservice2.exception.DuplicatedException;
 import com.sonnguyen.iamservice2.model.Account;
 import com.sonnguyen.iamservice2.repository.AccountRepository;
 import com.sonnguyen.iamservice2.viewmodel.UserCreationPostVm;
+import com.sonnguyen.iamservice2.viewmodel.UserDetailGetVm;
 import com.sonnguyen.iamservice2.viewmodel.UserRegistrationPostVm;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -53,6 +56,7 @@ public class AccountServiceImpl implements AccountService {
         accountRepository.verifiedAccountByEmail(email);
     }
 
-
-
+    public Page<UserDetailGetVm> findAll(Pageable pageable){
+        return accountRepository.findAll(pageable).map(UserDetailGetVm::fromEntity);
+    }
 }

@@ -94,7 +94,7 @@ public class KeycloakAccountServiceImpl implements AccountService {
                 )
         );
 
-        userRepresentation.setEnabled(!account.isLocked());
+        userRepresentation.setEnabled(!account.getLocked());
 
         //User's credentials information
         CredentialRepresentation credentialRepresentation = new CredentialRepresentation();

@@ -21,7 +21,7 @@ public class Account extends AbstractAuditEntity {
     private String phone;
     private String address;
     private String picture;
-    private boolean locked;
-    private boolean verified;
-    private boolean deleted;
+    private Boolean locked;
+    private Boolean verified;
+    private Boolean deleted;
 }

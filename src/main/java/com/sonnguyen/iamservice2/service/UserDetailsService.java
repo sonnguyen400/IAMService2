@@ -28,8 +28,8 @@ public class UserDetailsService {
         UserDetails userDetails = new UserDetails();
         userDetails.setUsername(account.getEmail());
         userDetails.setPassword(account.getPassword());
-        userDetails.setVerified(account.isVerified());
-        userDetails.setNonLocked(!account.isLocked());
+        userDetails.setVerified(account.getVerified());
+        userDetails.setNonLocked(!account.getLocked());
         userDetails.setAuthorities(List.of());
         return userDetails;
     }
