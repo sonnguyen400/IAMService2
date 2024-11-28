@@ -1,8 +1,12 @@
 package com.sonnguyen.iamservice2.service;
 
+import com.sonnguyen.iamservice2.exception.TokenException;
 import com.sonnguyen.iamservice2.utils.JWTUtilsImpl;
 import com.sonnguyen.iamservice2.viewmodel.LoginPostVm;
 import com.sonnguyen.iamservice2.viewmodel.LoginResponseViewModel;
+import com.sonnguyen.iamservice2.viewmodel.RequestTokenVm;
+import com.sonnguyen.iamservice2.viewmodel.ResponseTokenVm;
+import io.jsonwebtoken.Claims;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -36,18 +40,42 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String username = loginPostVm.username();
         String password = loginPostVm.password();
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-        String accesstoken = generateAccessToken(authentication);
-        LoginResponseViewModel responseBody = new LoginResponseViewModel(accesstoken);
+        ResponseTokenVm  responseBody = generateResponseToken((String) authentication.getPrincipal(),authentication.getAuthorities());
         return ResponseEntity.ok(responseBody);
     }
 
-    public String generateAccessToken(Authentication authentication) {
+    public ResponseTokenVm refreshToken(String refreshToken){
+        try {
+            Claims claims=jwtUtils.validateToken(refreshToken);
+            String scope=claims.get("scope").toString();
+            String principal=claims.get("principal").toString();
+            Collection<? extends GrantedAuthority> authorities=extractAuthoritiesFromString(scope);
+            return generateResponseToken(principal,authorities);
+        } catch (Exception e) {
+            throw new TokenException(e.getMessage());
+        }
+    }
+
+
+    public void logout(RequestTokenVm requestTokenVm){
+
+    }
+    public ResponseTokenVm generateResponseToken(String subject,Collection<? extends GrantedAuthority> authorities){
+        String access_token=generateAccessToken(subject,authorities);
+        String refresh_token=generateRefreshToken(subject,authorities);
+        return new ResponseTokenVm(access_token,refresh_token);
+    }
+    public static String mapAuthoritiesToString(Collection<? extends GrantedAuthority> authorities) {
+        return authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(" "));
+    }
+    public String generateRefreshToken(String subject,Collection<? extends GrantedAuthority> authorities){
         Map<String, Object> claims = Map.of(
-                "scope", mapAuthoritiesToString(authentication.getAuthorities())
+                "scope", mapAuthoritiesToString(authorities),
+                "principal",subject
         );
         try {
             return jwtUtils.builder()
-                    .subject(authentication.getName())
+                    .subject(null)
                     .claims(claims)
                     .expiration(Instant.now().plusSeconds(ACCESS_TOKEN_EXPIRATION_SECOND))
                     .build();
@@ -55,9 +83,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new RuntimeException(e);
         }
     }
-
-    public static String mapAuthoritiesToString(Collection<? extends GrantedAuthority> authorities) {
-        return authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(" "));
+    public String generateAccessToken(String subject, Collection<? extends GrantedAuthority> authorities) {
+        Map<String, Object> claims = Map.of(
+                "scope", mapAuthoritiesToString(authorities)
+        );
+        try {
+            return jwtUtils.builder()
+                    .subject(subject)
+                    .claims(claims)
+                    .expiration(Instant.now().plusSeconds(ACCESS_TOKEN_EXPIRATION_SECOND))
+                    .build();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static Collection<? extends GrantedAuthority> extractAuthoritiesFromString(String authorities) {

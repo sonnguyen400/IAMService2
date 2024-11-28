@@ -8,7 +8,6 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-
   security:
     oauth2:
       client:
@@ -19,7 +18,7 @@ spring:
           keycloak:
             provider: keycloak
             client-id: client
-            client-secret: L4cQEfVjcmoA4bzujcpwG23iYmP4iZhn
+            client-secret: 1TE8NFqApveItwFS1Pp1NlHnan29NKLP
             scope: openid
 keycloak:
   server-url: http://localhost:8080
@@ -30,10 +29,14 @@ keycloak:
       realm: "iam_service"
       username: admin
       password: 123456
-
 logging:
   level:
     org.springframework.security: trace
 debug: true
 server:
   port: 8085
+service:
+  mail:
+    from: hellohoangson@gmail.com
+    sendgrid:
+      apiKey: "000"

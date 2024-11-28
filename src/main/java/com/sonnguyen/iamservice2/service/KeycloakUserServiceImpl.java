@@ -45,6 +45,7 @@ public class KeycloakUserServiceImpl implements UserService {
 
     }
 
+
     public UserRepresentation mapUserRegistrationPostVm(UserRegistrationPostVm userRegistrationPostVm) {
 
         //User's base profile

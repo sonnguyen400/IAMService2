@@ -2,8 +2,7 @@ package com.sonnguyen.iamservice2.controller;
 
 import com.sonnguyen.iamservice2.service.AuthenticationService;
 import com.sonnguyen.iamservice2.service.UserService;
-import com.sonnguyen.iamservice2.viewmodel.LoginPostVm;
-import com.sonnguyen.iamservice2.viewmodel.UserRegistrationPostVm;
+import com.sonnguyen.iamservice2.viewmodel.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -30,4 +29,13 @@ public class AuthenticationController {
         userService.createUser(registrationPostVm);
         return "registered successfully";
     }
+    @PostMapping(value = "/logout")
+    public void logout(@RequestBody RequestTokenVm requestTokenVm){
+        authenticationService.logout(requestTokenVm);
+    }
+    @PostMapping(value = "/token/refresh")
+    public ResponseTokenVm refreshToken(@RequestBody RefreshTokenPostVm refreshTokenPostVm){
+        return authenticationService.refreshToken(refreshTokenPostVm.refresh_token());
+    }
+
 }

@@ -1,13 +1,10 @@
 package com.sonnguyen.iamservice2.service;
 
-import com.sonnguyen.iamservice2.viewmodel.LoginPostVm;
-import com.sonnguyen.iamservice2.viewmodel.LoginResponseViewModel;
+import com.sonnguyen.iamservice2.viewmodel.*;
 import jakarta.annotation.Nullable;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.keycloak.admin.client.Keycloak;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
@@ -19,15 +16,21 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Service
 @Order(Ordered.LOWEST_PRECEDENCE - 1)
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-@RequiredArgsConstructor
 @Primary
 @ConditionalOnBean(Keycloak.class)
 public class KeycloakAuthenticationServiceImpl implements AuthenticationService {
     @Autowired
-    OAuth2AuthorizedClientService oauth2AuthorizedClientService;
+    private OAuth2AuthorizedClientService oauth2AuthorizedClientService;
+    @Autowired
+    KeycloakClientService keycloakClientService;
+    @Value("${spring.security.oauth2.client.registration.keycloak.client-id}")
+    private String clientId;
+    @Value("${spring.security.oauth2.client.registration.keycloak.client-secret}")
+    private String clientSecret;
 
     @Override
     public ResponseEntity<?> login(@Nullable LoginPostVm loginPostVm) {
@@ -35,5 +38,22 @@ public class KeycloakAuthenticationServiceImpl implements AuthenticationService 
         OAuth2AuthorizedClient oAuth2AuthorizedClient = oauth2AuthorizedClientService.loadAuthorizedClient(authentication.getAuthorizedClientRegistrationId(), authentication.getName());
         LoginResponseViewModel responseBody = new LoginResponseViewModel(oAuth2AuthorizedClient.getAccessToken().getTokenValue());
         return ResponseEntity.ok(responseBody);
+    }
+
+    @Override
+    public ResponseTokenVm refreshToken(String refreshToken) {
+        return keycloakClientService.refreshToken(Map.of(
+                "refresh_token",refreshToken,
+                "client_id",clientId,
+                "client_secret",clientSecret,
+                "grant_type","refresh_token"
+        ));
+    }
+    public void logout(RequestTokenVm requestTokenVm) {
+        keycloakClientService.logout(Map.of(
+                "client_id",clientId,
+                "client_secret",clientSecret,
+                "refresh_token",requestTokenVm.refresh_token()
+        ));
     }
 }
