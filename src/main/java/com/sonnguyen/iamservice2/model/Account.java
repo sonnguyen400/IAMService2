@@ -9,12 +9,19 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "account")
 public class Account extends AbstractAuditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String password;
     private String email;
-    private boolean enabled;
+    private String firstName;
+    private String lastName;
+    private String phone;
+    private String address;
+    private String picture;
     private boolean locked;
+    private boolean verified;
+    private boolean deleted;
 }

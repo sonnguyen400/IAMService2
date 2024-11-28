@@ -28,7 +28,7 @@ public class UserDetailsService {
         UserDetails userDetails = new UserDetails();
         userDetails.setUsername(account.getEmail());
         userDetails.setPassword(account.getPassword());
-        userDetails.setEnabled(account.isEnabled());
+        userDetails.setVerified(account.isVerified());
         userDetails.setNonLocked(!account.isLocked());
         userDetails.setAuthorities(List.of());
         return userDetails;

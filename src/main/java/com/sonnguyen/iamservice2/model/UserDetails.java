@@ -11,7 +11,7 @@ import java.util.Collection;
 public class UserDetails {
     private String username;
     private String password;
-    private boolean enabled;
+    private boolean verified;
     private boolean nonLocked;
     private Collection<? extends GrantedAuthority> authorities;
 }

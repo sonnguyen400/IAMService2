@@ -32,7 +32,7 @@ public class AuthenticationController {
     }
     @PostMapping(value = "/register")
     public String register(@RequestBody UserRegistrationPostVm registrationPostVm){
-        accountService.createUser(registrationPostVm);
+        accountService.register(registrationPostVm);
         return "registered successfully";
     }
     @GetMapping(value = "/verify")
@@ -48,8 +48,8 @@ public class AuthenticationController {
         authenticationService.logout(requestTokenVm);
     }
     @PostMapping(value = "/token/refresh")
-    public ResponseTokenVm refreshToken(@RequestBody RefreshTokenPostVm refreshTokenPostVm){
-        return authenticationService.refreshToken(refreshTokenPostVm.refresh_token());
+    public ResponseTokenVm refreshToken(@RequestParam String refresh_token){
+        return authenticationService.refreshToken(refresh_token);
     }
 
 }

@@ -36,10 +36,11 @@ import java.util.stream.Collectors;
 @Slf4j
 public class AuthenticationServiceImpl implements AuthenticationService {
     public static final long ACCESS_TOKEN_EXPIRATION_SECOND = (long) (60 * 60 * 3);
+    public static final long REFRESH_TOKEN_EXPIRATION_SECOND = (long) (60 * 60 * 12*7);
     @Autowired
     AuthenticationManager authenticationManager;
     @Autowired
-    AccountService accountService;
+    AccountServiceImpl accountService;
     @Autowired
     JWTUtilsImpl jwtUtils;
     @Autowired
@@ -70,7 +71,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             String email=claims.get("id",String.class);
             String type=claims.get("type",String.class);
             if(email!=null&&type!=null&&type.equalsIgnoreCase(IDTokenType.VERIFY_ACCOUNT.value)){
-                accountService.enableAccountByEmail(email);
+                accountService.verifyAccountByEmail(email);
             }
             return ResponseEntity.ok("Verify Ok");
         } catch (Exception e) {
@@ -157,7 +158,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             return jwtUtils.builder()
                     .subject(null)
                     .claims(claims)
-                    .expiration(Instant.now().plusSeconds(ACCESS_TOKEN_EXPIRATION_SECOND))
+                    .expiration(Instant.now().plusSeconds(REFRESH_TOKEN_EXPIRATION_SECOND))
                     .build();
         } catch (Exception e) {
             throw new RuntimeException(e);

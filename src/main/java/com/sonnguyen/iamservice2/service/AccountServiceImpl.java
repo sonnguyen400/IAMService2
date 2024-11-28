@@ -1,8 +1,9 @@
 package com.sonnguyen.iamservice2.service;
 
-import com.sonnguyen.iamservice2.exception.ResourceNotFoundException;
+import com.sonnguyen.iamservice2.exception.DuplicatedException;
 import com.sonnguyen.iamservice2.model.Account;
 import com.sonnguyen.iamservice2.repository.AccountRepository;
+import com.sonnguyen.iamservice2.viewmodel.UserCreationPostVm;
 import com.sonnguyen.iamservice2.viewmodel.UserRegistrationPostVm;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
@@ -23,15 +24,31 @@ public class AccountServiceImpl implements AccountService {
         return accountRepository.findByEmail(username);
     }
     @Override
-    public void createUser(UserRegistrationPostVm userRegistrationPostVm) {
+    public void register(UserRegistrationPostVm userRegistrationPostVm){
+        if(accountRepository.existsAccountByEmail(userRegistrationPostVm.email())){
+            throw new DuplicatedException("Email was registered");
+        }
         Account account = userRegistrationPostVm.toEntity();
+        account.setVerified(false);
         account.setPassword(passwordEncoder.encode(account.getPassword()));
         accountRepository.save(account);
     }
+
     @Override
-    @Transactional
-    public void enableAccountByEmail(String email) {
-        System.out.println("Enable "+email);
-        accountRepository.enableAccountByEmail(email);
+    public void create(UserCreationPostVm userCreationPostVm) {
+        if(accountRepository.existsAccountByEmail(userCreationPostVm.email())){
+            throw new DuplicatedException("Email was registered");
+        }
+        Account account = userCreationPostVm.toEntity();
+        account.setPassword(passwordEncoder.encode(account.getPassword()));
+        accountRepository.save(account);
     }
+
+    @Transactional
+    public void verifyAccountByEmail(String email) {
+        accountRepository.verifiedAccountByEmail(email);
+    }
+
+
+
 }

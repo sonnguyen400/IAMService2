@@ -31,8 +31,7 @@ public class OtpService {
         return (String) redisTemplate.opsForValue().get(email);
     }
     public void validateOtp(String email,String otp) {
-        String encodedOtp = (String) redisTemplate.opsForValue().get(email);
-        System.out.println(otp+"   "+encodedOtp);
+        String encodedOtp =findByEmail(email);
         if( !passwordEncoder.matches(otp, encodedOtp)){
             throw new OtpException("Invalid OTP");
         };
