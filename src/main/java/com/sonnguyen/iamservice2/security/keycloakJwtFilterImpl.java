@@ -26,7 +26,10 @@ import java.io.IOException;
 @Component
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
-@ConditionalOnProperty(value = "keycloak.enable",havingValue = "true")
+@ConditionalOnProperty(
+        value = "default-idp",
+        havingValue = "KEYCLOAK"
+)
 @Primary
 @Slf4j
 public class keycloakJwtFilterImpl extends OncePerRequestFilter implements JwtFilter {

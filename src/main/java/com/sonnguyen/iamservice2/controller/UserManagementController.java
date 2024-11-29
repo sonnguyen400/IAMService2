@@ -7,7 +7,7 @@ import com.sonnguyen.iamservice2.viewmodel.UserDetailGetVm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,11 +26,19 @@ public class UserManagementController {
     public void updateAccountLockStatus(@RequestParam Boolean lock,@RequestParam String email){
         accountService.updateLockedStatusByEmail(lock,email);
     }
+    @PostMapping(value = "/")
+    public ResponseEntity<?> deleteUserByEmail(@RequestParam String email){
+        return accountService.deleteByEmail(email);
+    }
     @GetMapping
     public Page<UserDetailGetVm> findAll(
             @RequestParam(name = "page",required = false,defaultValue = "0") Integer page,
             @RequestParam(name = "size",required = false,defaultValue = "10") Integer size
     ){
         return accountServiceImpl.findAll(PageRequest.of(page,size));
+    }
+    @PostMapping(value = "/{id}/delete")
+    public ResponseEntity<?> deleteById(@PathVariable Long id){
+        return accountServiceImpl.deleteById(id);
     }
 }

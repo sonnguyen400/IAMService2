@@ -26,8 +26,10 @@ public class SecurityConfig {
     JwtFilter jwtFilter;
 
     @Bean
-    @Order(1)
-    @ConditionalOnProperty(value = "keycloak.enable", havingValue = "true")
+    @ConditionalOnProperty(
+            value = "default-idp",
+            havingValue = "KEYCLOAK"
+    )
     public SecurityFilterChain configSecurityWithExternalIdp(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(request -> {
             request
@@ -40,7 +42,10 @@ public class SecurityConfig {
     }
 
     @Bean
-    @ConditionalOnProperty(value = "keycloak.enable", havingValue = "false")
+    @ConditionalOnProperty(
+            value = "default-idp",
+            havingValue = ""
+    )
     public SecurityFilterChain configSecurity(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(request -> {
             request

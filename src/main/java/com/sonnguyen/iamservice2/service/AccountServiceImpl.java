@@ -7,11 +7,14 @@ import com.sonnguyen.iamservice2.viewmodel.UserCreationPostVm;
 import com.sonnguyen.iamservice2.viewmodel.UserDetailGetVm;
 import com.sonnguyen.iamservice2.viewmodel.UserRegistrationPostVm;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.core.Response;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -28,14 +31,10 @@ public class AccountServiceImpl implements AccountService {
     }
     @Override
     public void register(UserRegistrationPostVm userRegistrationPostVm){
-        if(accountRepository.existsAccountByEmail(userRegistrationPostVm.email())){
-            throw new DuplicatedException("Email was registered");
-        }
         Account account = userRegistrationPostVm.toEntity();
-        account.setVerified(false);
-        account.setPassword(passwordEncoder.encode(account.getPassword()));
-        accountRepository.save(account);
+        saveAccount(account);
     }
+
     @Override
     @Transactional
     public void updateLockedStatusByEmail(Boolean isLocked, String email) {
@@ -43,20 +42,42 @@ public class AccountServiceImpl implements AccountService {
     }
     @Override
     public void create(UserCreationPostVm userCreationPostVm) {
-        if(accountRepository.existsAccountByEmail(userCreationPostVm.email())){
-            throw new DuplicatedException("Email was registered");
-        }
         Account account = userCreationPostVm.toEntity();
-        account.setPassword(passwordEncoder.encode(account.getPassword()));
-        accountRepository.save(account);
+        saveAccount(account);
     }
-
     @Transactional
     public void verifyAccountByEmail(String email) {
         accountRepository.verifiedAccountByEmail(email);
     }
+    public Account saveAccount(Account account){
+        if(accountRepository.existsAccountByEmail(account.getEmail())){
+            throw new DuplicatedException("Email was registered");
+        }
+        account.setVerified(false);
+        account.setPassword(passwordEncoder.encode(account.getPassword()));
+        return accountRepository.save(account);
+    }
+    @Override
+    @Transactional
+    public ResponseEntity<?> deleteByEmail(String email){
+        if(existedByEmail(email)){
+            accountRepository.softDeleteByEmail(email);
+        }
+        return ResponseEntity.status(Response.Status.NOT_FOUND.getStatusCode())
+                .body("User registered with email"+email+"not found");
+    }
 
+    @Override
+    public ResponseEntity<?> deleteById(Object id) {
+        accountRepository.softDeleteById((Long) id);
+        return ResponseEntity.ok().build();
+    }
+
+    public boolean existedByEmail(String email){
+        return accountRepository.existsAccountByEmail(email);
+    }
     public Page<UserDetailGetVm> findAll(Pageable pageable){
         return accountRepository.findAll(pageable).map(UserDetailGetVm::fromEntity);
     }
+
 }

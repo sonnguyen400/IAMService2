@@ -14,7 +14,9 @@ import java.util.Optional;
 
 @Repository
 public interface AccountRepository extends JpaRepository<Account, Long> {
+    @Query("select case when exists (select a from Account a where a.email=?1 and (a.deleted=false or a.deleted is null )) then true else false end as account_exists")
     boolean existsAccountByEmail(String email);
+    @Query("select a from Account a where a.email=?1 and (a.deleted=false or a.deleted=null)")
     Optional<Account> findByEmail(String email);
     @Modifying
     @Query("update Account a set a.verified=true where a.email=?1")
@@ -25,4 +27,10 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     @NonNull
     @Query(value = "select a from Account a where a.deleted is null or a.deleted=false")
     Page<Account> findAll(@NonNull Pageable pageable);
+    @Query(value = "update Account a set a.deleted=true where a.email=?1")
+    @Modifying
+    void softDeleteByEmail(String email);
+    @Query(value = "update Account a set a.deleted=true where a.id=?1")
+    @Modifying
+    void softDeleteById(Long id);
 }

@@ -20,9 +20,9 @@ spring:
             client-id: client
             client-secret: L4cQEfVjcmoA4bzujcpwG23iYmP4iZhn
             scope: openid
+default-idp: KEYCLOAK
 keycloak:
   server-url: http://localhost:8080
-  enable: false
   jwks_uri: http://localhost:8080/realms/iam_service/protocol/openid-connect/certs
   user_management:
     registration:
