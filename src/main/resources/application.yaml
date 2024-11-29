@@ -1,4 +1,46 @@
 spring:
   application:
     name: IAMService2
-
+  datasource:
+    url: jdbc:postgresql://localhost:5432/IAM_Service
+    username: postgres
+    password: 123456
+  jpa:
+    hibernate:
+      ddl-auto: update
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8080/realms/iam_service
+        registration:
+          keycloak:
+            provider: keycloak
+            client-id: client
+            client-secret: L4cQEfVjcmoA4bzujcpwG23iYmP4iZhn
+            scope: openid
+keycloak:
+  server-url: http://localhost:8080
+  enable: false
+  jwks_uri: http://localhost:8080/realms/iam_service/protocol/openid-connect/certs
+  user_management:
+    registration:
+      realm: "iam_service"
+      username: admin
+      password: 123456
+logging:
+  level:
+    org.springframework.security: trace
+debug: true
+server:
+  port: 8085
+service:
+  mail:
+    from: hellohoangson@gmail.com
+    sendgrid:
+      apiKey: "000"
+application:
+  token:
+    verify_account:
+      live-time-secs: 1800
