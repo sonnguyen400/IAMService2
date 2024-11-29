@@ -1,5 +1,6 @@
 package com.sonnguyen.iamservice2.controller;
 
+import com.sonnguyen.iamservice2.service.RolePermissionService;
 import com.sonnguyen.iamservice2.service.RoleService;
 import com.sonnguyen.iamservice2.viewmodel.RoleGetVm;
 import com.sonnguyen.iamservice2.viewmodel.RolePostVm;
@@ -20,6 +21,7 @@ import java.util.List;
 @FieldDefaults(makeFinal = true,level= AccessLevel.PRIVATE)
 public class RoleController {
     RoleService roleService;
+    RolePermissionService rolePermissionService;
     @GetMapping
     public Page<RoleGetVm> findAll(
             @RequestParam(name = "page",defaultValue = "0",required = false) Integer page,
@@ -47,5 +49,11 @@ public class RoleController {
     @PostMapping(value = "/{id}/delete")
     public void deleteRoleById(@PathVariable Long id){
         roleService.deleteById(id);
+    }
+    @PostMapping("/{id}/updatePermissions")
+    public void updateRolePermission(
+            @PathVariable Long id,
+            @RequestBody List<Long> permissionIds){
+        rolePermissionService.updateRolePermission(id,permissionIds);
     }
 }

@@ -1,7 +1,9 @@
 package com.sonnguyen.iamservice2.service;
 
 import com.sonnguyen.iamservice2.model.Permission;
+import com.sonnguyen.iamservice2.model.RolePermission;
 import com.sonnguyen.iamservice2.repository.PermissionRepository;
+import com.sonnguyen.iamservice2.repository.RolePermissionRepository;
 import com.sonnguyen.iamservice2.viewmodel.PermissionGetVm;
 import com.sonnguyen.iamservice2.viewmodel.PermissionPostVm;
 import jakarta.transaction.Transactional;
@@ -19,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PermissionService {
     PermissionRepository permissionRepository;
+    RolePermissionRepository rolePermissionRepository;
     public Page<PermissionGetVm> findAll(Pageable pageable){
         return permissionRepository.findAll(pageable).map(PermissionGetVm::fromEntity);
     }
@@ -43,5 +46,10 @@ public class PermissionService {
     @Transactional
     public void deleteById(Long id){
         permissionRepository.softDeleteById(id);
+    }
+    public List<PermissionGetVm> findAllByRoleId(Long roleId){
+        List<RolePermission> rolePermissions=rolePermissionRepository.findAllByRoleId(roleId);
+        List<Long> permissionIds=rolePermissions.stream().map(RolePermission::getPermission_id).toList();
+        return findAllByIdIn(permissionIds);
     }
 }

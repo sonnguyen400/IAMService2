@@ -17,10 +17,10 @@ import java.util.List;
 public interface RoleRepository extends JpaRepository<Role, Long> {
     @Query("select p from Role p where p.id in :ids and p.deleted=false")
     List<Role> findAllByIdIn(@Param("ids") List<Long> id);
-    @Query("select p from Role p where p.deleted=false")
     @Nonnull
+    @Query("select p from Role p where p.deleted=false")
     Page<Role> findAll(@Nonnull Pageable pageable);
-    @Query("update Role p set p.deleted=true where p.id=?1")
     @Modifying
+    @Query("update Role p set p.deleted=true where p.id=?1")
     void softDeleteById(Long id);
 }

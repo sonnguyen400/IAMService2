@@ -16,10 +16,10 @@ import java.util.List;
 public interface PermissionRepository extends JpaRepository<Permission,Long> {
     @Query("select p from Permission p where p.id in :ids and p.deleted=false")
     List<Permission> findAllByIdIn(@Param("ids") List<Long> id);
-    @Query("select p from Permission p where p.deleted=false")
     @Nonnull
+    @Query("select p from Permission p where p.deleted=false")
     Page<Permission> findAll(@Nonnull Pageable pageable);
-    @Query("update Permission p set p.deleted=true where p.id=?1")
     @Modifying
+    @Query("update Permission p set p.deleted=true where p.id=?1")
     void softDeleteById(Long id);
 }

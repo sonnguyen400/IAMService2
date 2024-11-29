@@ -1,6 +1,7 @@
 package com.sonnguyen.iamservice2.controller;
 
 import com.sonnguyen.iamservice2.service.PermissionService;
+import com.sonnguyen.iamservice2.service.RolePermissionService;
 import com.sonnguyen.iamservice2.viewmodel.PermissionGetVm;
 import com.sonnguyen.iamservice2.viewmodel.PermissionPostVm;
 import jakarta.validation.Valid;
@@ -21,9 +22,15 @@ import java.util.List;
 @FieldDefaults(makeFinal = true,level= AccessLevel.PRIVATE)
 public class PermissionController {
     PermissionService permissionService;
+    RolePermissionService rolePermissionService;
     @GetMapping("/ids")
     public List<PermissionGetVm> findAllById(@RequestParam List<Long> id){
         return permissionService.findAllByIdIn(id);
+    }
+    @GetMapping("/roleid/{roleId}")
+    public List<PermissionGetVm> findAllByRoleId(
+            @PathVariable Long roleId){
+        return permissionService.findAllByRoleId(roleId);
     }
     @GetMapping
     public Page<PermissionGetVm> findAll(
@@ -46,4 +53,5 @@ public class PermissionController {
     public void deletePermissionById(@PathVariable Long id){
          permissionService.deleteById(id);
     }
+
 }
