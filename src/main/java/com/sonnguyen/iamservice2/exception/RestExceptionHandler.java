@@ -8,6 +8,7 @@ import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.validation.method.MethodValidationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -90,6 +91,15 @@ public class RestExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseMessage handleResourceNotFoundException(ResourceNotFoundException e) {
+        return ResponseMessage
+                .builder()
+                .status(ResponseMessageStatus.FAIL.status)
+                .message(e.getMessage())
+                .build();
+    }
+    @ExceptionHandler(MethodValidationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseMessage methodValidationException(MethodValidationException e) {
         return ResponseMessage
                 .builder()
                 .status(ResponseMessageStatus.FAIL.status)

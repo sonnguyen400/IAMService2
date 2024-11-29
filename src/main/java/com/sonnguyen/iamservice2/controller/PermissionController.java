@@ -4,6 +4,7 @@ import com.sonnguyen.iamservice2.service.PermissionService;
 import com.sonnguyen.iamservice2.viewmodel.PermissionGetVm;
 import com.sonnguyen.iamservice2.viewmodel.PermissionPostVm;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -32,7 +33,7 @@ public class PermissionController {
         return permissionService.findAll(PageRequest.of(page,size));
     }
     @PostMapping
-    public List<PermissionGetVm> createPermissions(@RequestBody @Valid List<PermissionPostVm> permissionPostVms){
+    public List<PermissionGetVm> createPermissions(@RequestBody @NotEmpty List<@Valid PermissionPostVm> permissionPostVms){
         return permissionService.createPermissions(permissionPostVms);
     }
     @PostMapping("/{id}/update")
@@ -42,8 +43,7 @@ public class PermissionController {
         return permissionService.updatePermissionById(id,permissionPostVm);
     }
     @PostMapping("/{id}/delete")
-    public void deletePermissionById(
-            @PathVariable Long id){
+    public void deletePermissionById(@PathVariable Long id){
          permissionService.deleteById(id);
     }
 }

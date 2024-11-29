@@ -2,7 +2,6 @@ package com.sonnguyen.iamservice2.viewmodel;
 
 import com.sonnguyen.iamservice2.model.Permission;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 public record PermissionPostVm(
         @NotBlank String resource_name,
