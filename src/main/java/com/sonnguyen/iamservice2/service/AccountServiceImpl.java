@@ -68,6 +68,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Transactional
     public ResponseEntity<?> deleteById(Object id) {
         accountRepository.softDeleteById((Long) id);
         return ResponseEntity.ok().build();

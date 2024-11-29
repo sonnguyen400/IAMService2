@@ -1,9 +1,10 @@
 package com.sonnguyen.iamservice2.viewmodel;
 
 import com.sonnguyen.iamservice2.model.Account;
+import jakarta.validation.constraints.NotBlank;
 
-public record UserCreationPostVm (String password,
-                                 String email,
+public record UserCreationPostVm (@NotBlank String password,
+                                 @NotBlank String email,
                                  String firstname,
                                  String lastname,
                                  String phone,
