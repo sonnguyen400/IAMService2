@@ -42,7 +42,8 @@ public class keycloakJwtFilterImpl extends OncePerRequestFilter implements JwtFi
         if(jwt!=null){
             String username = jwt.getClaimAsString("preferred_username");
             try{
-                UserDetails userDetails = userDetailsService.loadUserByUsername(jwt.getClaimAsString("preferred_username"));
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                log.info("authorities {}", userDetails.getAuthorities());
                 Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (UsernameNotFoundException e) {

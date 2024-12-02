@@ -43,7 +43,7 @@ public class KeycloakAccountServiceImpl implements AccountService {
         Account account=userRegistrationPostVm.toEntity();
         account.setLocked(false);
         UserRepresentation userRepresentation=createKeycloakUser(account);
-        accountServiceImpl.register(userRegistrationPostVm);
+        accountServiceImpl.saveAccount(account);
     }
 
     @Override
@@ -108,8 +108,8 @@ public class KeycloakAccountServiceImpl implements AccountService {
         userRepresentation.setLastName(account.getLastName());
 
 
-        userRepresentation.setEnabled(!account.getLocked());
-        userRepresentation.setEmailVerified(account.getVerified());
+        userRepresentation.setEnabled(!account.isLocked());
+        userRepresentation.setEmailVerified(account.isVerified());
         //User's credentials information
         CredentialRepresentation credentialRepresentation = new CredentialRepresentation();
         credentialRepresentation.setType(CredentialRepresentation.PASSWORD);

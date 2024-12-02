@@ -16,7 +16,7 @@ import java.util.Optional;
 public interface AccountRepository extends JpaRepository<Account, Long> {
     @Query("select case when exists (select a from Account a where a.email=?1 and (a.deleted=false or a.deleted is null )) then true else false end as account_exists")
     boolean existsAccountByEmail(String email);
-    @Query("select a from Account a where a.email=?1 and (a.deleted=false or a.deleted=null)")
+    @Query("select a from Account a where a.email=?1 and (a.deleted=false or a.deleted is null)")
     Optional<Account> findByEmail(String email);
     @Modifying
     @Query("update Account a set a.verified=true where a.email=?1")

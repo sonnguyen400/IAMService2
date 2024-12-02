@@ -1,6 +1,6 @@
 package com.sonnguyen.iamservice2.service;
 
-import com.sonnguyen.iamservice2.model.Permission;
+import com.sonnguyen.iamservice2.model.AccountRole;
 import com.sonnguyen.iamservice2.model.RolePermission;
 import com.sonnguyen.iamservice2.repository.RolePermissionRepository;
 import com.sonnguyen.iamservice2.viewmodel.PermissionGetVm;
@@ -16,10 +16,14 @@ import java.util.List;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
 public class RolePermissionService {
+    AccountRoleService accountRoleService;
     RolePermissionRepository rolePermissionRepository;
     PermissionService permissionService;
     public List<RolePermission> findAllByRoleId(Long roleId){
         return rolePermissionRepository.findAllByRoleId(roleId);
+    }
+    List<RolePermission> findAllByRoleIdIn(List<Long> roleIds){
+        return rolePermissionRepository.findAllByRoleIdIn(roleIds);
     }
     @Transactional
     public void updateRolePermission(Long roleId,List<Long> permissionIds){
@@ -38,5 +42,10 @@ public class RolePermissionService {
                 .scope(permission.scope())
                 .resource_code(permission.resource_code())
                 .build();
+    }
+    public List<RolePermission> findAllByAccountId(Long accountId){
+        List<AccountRole> accountRoles=accountRoleService.findAllByAccountId(accountId);
+        List<Long> roleIds=accountRoles.stream().map(AccountRole::getRole_id).toList();
+        return rolePermissionRepository.findAllByRoleIdIn(roleIds);
     }
 }

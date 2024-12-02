@@ -18,6 +18,9 @@ public class AccountRoleService {
     RoleService roleService;
     AccountServiceImpl accountService;
     AccountRoleRepository accountRoleRepository;
+    public List<AccountRole> findAllByAccountId(Long accountId) {
+        return accountRoleRepository.findAllByAccountId(accountId);
+    }
     @Transactional
     public void updateAccountRoles(Long accountId, List<Long> roleIds) {
         //Check if accountId existed
@@ -38,6 +41,5 @@ public class AccountRoleService {
                 .map((roleId_)->new AccountRole(roleId_,accountId))
                 .toList();
         accountRoleRepository.saveAll(accountRoles);
-
     }
 }

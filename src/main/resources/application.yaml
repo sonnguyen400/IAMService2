@@ -27,7 +27,7 @@ keycloak:
   user_management:
     registration:
       realm: "iam_service"
-      username: admin
+      username: admin@gmail.com
       password: 123456
 logging:
   level:

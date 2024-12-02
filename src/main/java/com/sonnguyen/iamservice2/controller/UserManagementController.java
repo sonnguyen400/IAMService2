@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,6 +38,7 @@ public class UserManagementController {
         return accountService.deleteByEmail(email);
     }
     @GetMapping
+    @PreAuthorize("hasPermission('USER','USER_VIEW')")
     public Page<UserDetailGetVm> findAll(
             @RequestParam(name = "page",required = false,defaultValue = "0") Integer page,
             @RequestParam(name = "size",required = false,defaultValue = "10") Integer size

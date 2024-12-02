@@ -1,5 +1,6 @@
 package com.sonnguyen.iamservice2.controller;
 
+import com.sonnguyen.iamservice2.model.RolePermission;
 import com.sonnguyen.iamservice2.service.PermissionService;
 import com.sonnguyen.iamservice2.service.RolePermissionService;
 import com.sonnguyen.iamservice2.viewmodel.PermissionGetVm;
@@ -52,6 +53,10 @@ public class PermissionController {
     @PostMapping("/{id}/delete")
     public void deletePermissionById(@PathVariable Long id){
          permissionService.deleteById(id);
+    }
+    @GetMapping("/account/{account_id}")
+    public List<RolePermission> findAllByAccountId(@PathVariable Long account_id){
+        return rolePermissionService.findAllByAccountId(account_id);
     }
 
 }

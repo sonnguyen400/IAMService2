@@ -22,8 +22,10 @@ public class Account extends AbstractAuditEntity {
     private String phone;
     private String address;
     private String picture;
-    private Boolean locked;
-    private Boolean verified;
     @ColumnDefault(value = "false")
-    private Boolean deleted;
+    private boolean locked;
+    @ColumnDefault(value = "true")
+    private boolean verified;
+    @ColumnDefault(value = "false")
+    private boolean deleted;
 }

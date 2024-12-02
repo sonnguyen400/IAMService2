@@ -21,7 +21,7 @@ public record UserDetailGetVm(
                 account.getPhone(),
                 account.getAddress(),
                 account.getPicture(),
-                account.getLocked(),
-                account.getVerified());
+                account.isLocked(),
+                account.isVerified());
     }
 }

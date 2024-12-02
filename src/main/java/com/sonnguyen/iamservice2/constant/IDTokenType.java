@@ -5,6 +5,6 @@ public enum IDTokenType {
     FORGOT_PASSWORD("forgot_password"),
     ACCEPT_LOGIN("accept_login"),;
     public final String value;
-    private IDTokenType(String value) {
+    IDTokenType(String value) {
     this.value = value;}
 }
