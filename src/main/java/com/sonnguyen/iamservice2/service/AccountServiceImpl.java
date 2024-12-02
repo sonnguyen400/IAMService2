@@ -3,6 +3,7 @@ package com.sonnguyen.iamservice2.service;
 import com.sonnguyen.iamservice2.exception.DuplicatedException;
 import com.sonnguyen.iamservice2.model.Account;
 import com.sonnguyen.iamservice2.repository.AccountRepository;
+import com.sonnguyen.iamservice2.specification.AccountSpecification;
 import com.sonnguyen.iamservice2.viewmodel.UserCreationPostVm;
 import com.sonnguyen.iamservice2.viewmodel.UserDetailGetVm;
 import com.sonnguyen.iamservice2.viewmodel.UserProfilePostVm;
@@ -15,10 +16,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -83,6 +86,17 @@ public class AccountServiceImpl implements AccountService {
         return accountRepository.existsAccountByEmail(email);
     }
     public Page<UserDetailGetVm> findAll(Pageable pageable){
+        return accountRepository.findAll(pageable).map(UserDetailGetVm::fromEntity);
+    }
+    public Page<UserDetailGetVm> findAll(List<AccountSpecification> specifications, Pageable pageable){
+        if(!specifications.isEmpty()){
+            Specification<Account> predicates= Specification.where(specifications.getFirst());
+            for(int i=1;i<specifications.size();i++){
+                predicates.or(specifications.get(i));
+            }
+            System.out.println("Find All");
+            return accountRepository.findAll(predicates,pageable).map(UserDetailGetVm::fromEntity);
+        }
         return accountRepository.findAll(pageable).map(UserDetailGetVm::fromEntity);
     }
     @Override

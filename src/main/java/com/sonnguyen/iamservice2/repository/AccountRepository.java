@@ -4,6 +4,7 @@ import com.sonnguyen.iamservice2.model.Account;
 import lombok.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -26,6 +27,8 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     @NonNull
     @Query(value = "select a from Account a where a.deleted is null or a.deleted=false")
     Page<Account> findAll(@NonNull Pageable pageable);
+    @NonNull
+    Page<Account> findAll(@NonNull Specification<Account> specification, @NonNull Pageable pageable);
     @Query(value = "update Account a set a.deleted=true where a.email=?1")
     @Modifying
     void softDeleteByEmail(String email);

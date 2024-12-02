@@ -30,6 +30,14 @@ public class RestExceptionHandler {
                 .message(e.getConstraintViolations().stream().map((ConstraintViolation::getMessage)).collect(Collectors.joining("\n")))
                 .build();
     }
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseMessage handleIllegalArgument(IllegalArgumentException e) {
+        return ResponseMessage.builder()
+                .status(ResponseMessageStatus.FAIL.status)
+                .message(e.getMessage())
+                .build();
+    }
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseMessage handleMethodArgumentException(MethodArgumentNotValidException e) {
