@@ -26,6 +26,10 @@ import java.util.Optional;
 public class AccountServiceImpl implements AccountService {
     AccountRepository accountRepository;
     PasswordEncoder passwordEncoder;
+    public Account findById(Long id) {
+        return accountRepository.findById(id)
+                .orElseThrow(()-> new NotFoundException("Account not found"));
+    }
     public Optional<Account> findByEmail(String username) {
         return accountRepository.findByEmail(username);
     }

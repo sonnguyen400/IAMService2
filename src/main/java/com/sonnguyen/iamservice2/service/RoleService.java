@@ -1,6 +1,8 @@
 package com.sonnguyen.iamservice2.service;
 
+import com.sonnguyen.iamservice2.model.AccountRole;
 import com.sonnguyen.iamservice2.model.Role;
+import com.sonnguyen.iamservice2.repository.AccountRoleRepository;
 import com.sonnguyen.iamservice2.repository.RoleRepository;
 import com.sonnguyen.iamservice2.viewmodel.RoleGetVm;
 import com.sonnguyen.iamservice2.viewmodel.RolePostVm;
@@ -19,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RoleService {
     RoleRepository roleRepository;
+    AccountRoleRepository accountRoleRepository;
     public Page<RoleGetVm> findAll(Pageable pageable){
         return roleRepository.findAll(pageable).map(RoleGetVm::fromEntity);
     }
@@ -43,5 +46,12 @@ public class RoleService {
     @Transactional
     public void deleteById(Long id){
         roleRepository.softDeleteById(id);
+    }
+    public List<RoleGetVm> findAllByAccountId(Long accountId){
+        List<AccountRole> accountRoles=accountRoleRepository.findAllByAccountId(accountId);
+        List<Long> roleIds=accountRoles.stream().map(AccountRole::getRole_id).toList();
+        return roleRepository.findAllByIdIn(roleIds)
+                .stream().map(RoleGetVm::fromEntity)
+                .toList();
     }
 }

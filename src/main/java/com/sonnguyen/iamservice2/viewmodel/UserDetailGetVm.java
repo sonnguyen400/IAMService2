@@ -3,6 +3,7 @@ package com.sonnguyen.iamservice2.viewmodel;
 import com.sonnguyen.iamservice2.model.Account;
 
 public record UserDetailGetVm(
+        Long id,
         String email,
         String firstname,
         String lastname,
@@ -13,7 +14,8 @@ public record UserDetailGetVm(
         Boolean verified
 ) {
     public static UserDetailGetVm fromEntity(Account account){
-        return new UserDetailGetVm(account.getEmail(),
+        return new UserDetailGetVm(account.getId(),
+                account.getEmail(),
                 account.getFirstName(),
                 account.getLastName(),
                 account.getPhone(),

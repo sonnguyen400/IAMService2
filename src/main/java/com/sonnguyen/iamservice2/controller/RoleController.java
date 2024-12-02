@@ -29,6 +29,10 @@ public class RoleController {
     ){
         return roleService.findAll(PageRequest.of(page,size));
     }
+    @GetMapping("/account/{account_id}")
+    public List<RoleGetVm> findAllByAccountId(@PathVariable Long account_id){
+        return roleService.findAllByAccountId(account_id);
+    }
 
     @GetMapping("/ids")
     public List<RoleGetVm> findAllByIds(

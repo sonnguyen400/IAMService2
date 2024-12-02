@@ -1,5 +1,6 @@
 package com.sonnguyen.iamservice2.controller;
 
+import com.sonnguyen.iamservice2.service.AccountRoleService;
 import com.sonnguyen.iamservice2.service.AccountService;
 import com.sonnguyen.iamservice2.service.AccountServiceImpl;
 import com.sonnguyen.iamservice2.viewmodel.UserCreationPostVm;
@@ -13,6 +14,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
@@ -20,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserManagementController {
     AccountService accountService;
     AccountServiceImpl accountServiceImpl;
-
+    AccountRoleService accountRoleService;
     @PostMapping
     public void createNewUser(@RequestBody UserCreationPostVm userCreationPostVm){
         accountService.create(userCreationPostVm);
@@ -43,5 +46,9 @@ public class UserManagementController {
     @PostMapping(value = "/{id}/delete")
     public ResponseEntity<?> deleteById(@PathVariable Long id){
         return accountServiceImpl.deleteById(id);
+    }
+    @PostMapping("/{id}/updateRole")
+    public void updateRole(@PathVariable Long id, @RequestBody List<Long> roleIds){
+        accountRoleService.updateAccountRoles(id,roleIds);
     }
 }
