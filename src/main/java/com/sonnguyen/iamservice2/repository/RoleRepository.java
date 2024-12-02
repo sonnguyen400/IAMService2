@@ -1,7 +1,6 @@
 package com.sonnguyen.iamservice2.repository;
 
 import com.sonnguyen.iamservice2.model.Role;
-import com.sonnguyen.iamservice2.model.Role;
 import jakarta.annotation.Nonnull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -5,6 +5,7 @@ import com.sonnguyen.iamservice2.service.AccountService;
 import com.sonnguyen.iamservice2.service.AccountServiceImpl;
 import com.sonnguyen.iamservice2.viewmodel.UserCreationPostVm;
 import com.sonnguyen.iamservice2.viewmodel.UserDetailGetVm;
+import com.sonnguyen.iamservice2.viewmodel.UserProfilePostVm;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -58,4 +59,10 @@ public class UserManagementController {
                               @RequestParam String password){
         accountService.resetPasswordByAccountId(id,password);
     }
+    @PostMapping("/{id}/updateprofile")
+    public void updateAccountProfile(@PathVariable Long id,
+                                     @RequestBody UserProfilePostVm userProfilePostVm){
+        accountServiceImpl.updateAccountProfileById(id,userProfilePostVm);
+    }
+
 }

@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.util.Date;
+
 @Entity
 @Getter
 @Setter
@@ -22,6 +24,7 @@ public class Account extends AbstractAuditEntity {
     private String phone;
     private String address;
     private String picture;
+    private Date dateOfBirth;
     @ColumnDefault(value = "false")
     private boolean locked;
     @ColumnDefault(value = "true")

@@ -1,7 +1,6 @@
 package com.sonnguyen.iamservice2.repository;
 
 import com.sonnguyen.iamservice2.model.Account;
-import jakarta.validation.constraints.NotNull;
 import lombok.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,4 +35,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     @Modifying
     @Query(value = "update Account a set a.password=?2 where a.id=?1")
     void resetPasswordByAccountId(Long accountId,String encodedPassword);
+    @Modifying
+    @Query(value = "update Account a set a.picture=?2 where a.id=?1")
+    void updateAccountPictureByAccountID(Long accountId,String pictureUrl);
 }

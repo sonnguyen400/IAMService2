@@ -1,6 +1,5 @@
 package com.sonnguyen.iamservice2.config;
 
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;

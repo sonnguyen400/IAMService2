@@ -5,6 +5,7 @@ import com.sonnguyen.iamservice2.model.Account;
 import com.sonnguyen.iamservice2.repository.AccountRepository;
 import com.sonnguyen.iamservice2.viewmodel.UserCreationPostVm;
 import com.sonnguyen.iamservice2.viewmodel.UserDetailGetVm;
+import com.sonnguyen.iamservice2.viewmodel.UserProfilePostVm;
 import com.sonnguyen.iamservice2.viewmodel.UserRegistrationPostVm;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
@@ -58,7 +59,6 @@ public class AccountServiceImpl implements AccountService {
         if(accountRepository.existsAccountByEmail(account.getEmail())){
             throw new DuplicatedException("Email was registered");
         }
-        System.out.println(account.isVerified());
         account.setPassword(passwordEncoder.encode(account.getPassword()));
         return accountRepository.save(account);
     }
@@ -90,6 +90,20 @@ public class AccountServiceImpl implements AccountService {
     public void resetPasswordByAccountId(Long accountId, String rawPassword){
         String password=passwordEncoder.encode(rawPassword);
         accountRepository.resetPasswordByAccountId(accountId,password);
+    }
+
+    public void updateAccountProfileById(Long accountId, UserProfilePostVm userProfilePostVm){
+        Account oldAccount=findById(accountId);
+        Account newAccount=mapNewAccountProfile(oldAccount,userProfilePostVm);
+        accountRepository.save(newAccount);
+    }
+    private Account mapNewAccountProfile(Account oldAccount,UserProfilePostVm userProfilePostVm){
+        oldAccount.setFirstName(userProfilePostVm.firstname());
+        oldAccount.setLastName(userProfilePostVm.lastname());
+        oldAccount.setAddress(userProfilePostVm.address());
+        oldAccount.setPhone(userProfilePostVm.phone());
+        oldAccount.setDateOfBirth(userProfilePostVm.dateOfBirth());
+        return oldAccount;
     }
 
 

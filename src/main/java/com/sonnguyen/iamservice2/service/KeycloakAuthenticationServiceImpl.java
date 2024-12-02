@@ -1,11 +1,11 @@
 package com.sonnguyen.iamservice2.service;
 
-import com.sonnguyen.iamservice2.viewmodel.*;
+import com.sonnguyen.iamservice2.viewmodel.LoginPostVm;
+import com.sonnguyen.iamservice2.viewmodel.RequestTokenVm;
+import com.sonnguyen.iamservice2.viewmodel.ResponseTokenVm;
 import jakarta.annotation.Nullable;
-import org.keycloak.admin.client.Keycloak;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
