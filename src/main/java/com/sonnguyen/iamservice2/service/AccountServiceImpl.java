@@ -36,6 +36,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void register(UserRegistrationPostVm userRegistrationPostVm){
         Account account = userRegistrationPostVm.toEntity();
+        account.setVerified(false);
         saveAccount(account);
     }
 
@@ -57,7 +58,7 @@ public class AccountServiceImpl implements AccountService {
         if(accountRepository.existsAccountByEmail(account.getEmail())){
             throw new DuplicatedException("Email was registered");
         }
-        account.setVerified(false);
+        System.out.println(account.isVerified());
         account.setPassword(passwordEncoder.encode(account.getPassword()));
         return accountRepository.save(account);
     }
@@ -84,5 +85,12 @@ public class AccountServiceImpl implements AccountService {
     public Page<UserDetailGetVm> findAll(Pageable pageable){
         return accountRepository.findAll(pageable).map(UserDetailGetVm::fromEntity);
     }
+    @Override
+    @Transactional
+    public void resetPasswordByAccountId(Long accountId, String rawPassword){
+        String password=passwordEncoder.encode(rawPassword);
+        accountRepository.resetPasswordByAccountId(accountId,password);
+    }
+
 
 }

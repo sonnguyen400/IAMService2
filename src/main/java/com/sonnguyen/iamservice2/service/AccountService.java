@@ -10,4 +10,5 @@ public interface AccountService {
     void updateLockedStatusByEmail(Boolean isLocked,String email);
     ResponseEntity<?> deleteByEmail(String email);
     ResponseEntity<?> deleteById(Object id);
+    void resetPasswordByAccountId(Long accountId,String rawPassword);
 }

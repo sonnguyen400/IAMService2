@@ -1,5 +1,6 @@
 package com.sonnguyen.iamservice2.service;
 
+import com.sonnguyen.iamservice2.exception.ResourceNotFoundException;
 import com.sonnguyen.iamservice2.model.Account;
 import com.sonnguyen.iamservice2.model.RolePermission;
 import com.sonnguyen.iamservice2.model.UserDetails;
@@ -34,7 +35,7 @@ public class UserDetailsService {
                     userDetails.setAuthorities(authorities);
                     return userDetails;
                 })
-                .orElseThrow(() -> new UsernameNotFoundException(username));
+                .orElseThrow(() -> new ResourceNotFoundException(username+" not found"));
     }
 
     public static UserDetails fromAccount(Account account) {

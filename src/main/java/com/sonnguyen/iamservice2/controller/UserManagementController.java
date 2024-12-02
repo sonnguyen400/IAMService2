@@ -8,7 +8,6 @@ import com.sonnguyen.iamservice2.viewmodel.UserDetailGetVm;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +24,7 @@ public class UserManagementController {
     AccountService accountService;
     AccountServiceImpl accountServiceImpl;
     AccountRoleService accountRoleService;
+
     @PostMapping
     public void createNewUser(@RequestBody UserCreationPostVm userCreationPostVm){
         accountService.create(userCreationPostVm);
@@ -52,5 +52,10 @@ public class UserManagementController {
     @PostMapping("/{id}/updateRole")
     public void updateRole(@PathVariable Long id, @RequestBody List<Long> roleIds){
         accountRoleService.updateAccountRoles(id,roleIds);
+    }
+    @PostMapping("/{id}/resetpassword")
+    public void resetPassword(@PathVariable Long id,
+                              @RequestParam String password){
+        accountService.resetPasswordByAccountId(id,password);
     }
 }

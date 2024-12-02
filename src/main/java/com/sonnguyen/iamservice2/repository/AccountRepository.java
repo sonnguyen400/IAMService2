@@ -33,4 +33,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     @Query(value = "update Account a set a.deleted=true where a.id=?1")
     @Modifying
     void softDeleteById(Long id);
+    @Modifying
+    @Query(value = "update Account a set a.password=?2 where a.id=?1")
+    void resetPasswordByAccountId(Long accountId,String encodedPassword);
 }

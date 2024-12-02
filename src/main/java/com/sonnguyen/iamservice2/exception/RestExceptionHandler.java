@@ -8,6 +8,7 @@ import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.method.MethodValidationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -100,6 +101,15 @@ public class RestExceptionHandler {
     @ExceptionHandler(MethodValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseMessage methodValidationException(MethodValidationException e) {
+        return ResponseMessage
+                .builder()
+                .status(ResponseMessageStatus.FAIL.status)
+                .message(e.getMessage())
+                .build();
+    }
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ResponseMessage handleAuthorizationException(AuthorizationDeniedException e) {
         return ResponseMessage
                 .builder()
                 .status(ResponseMessageStatus.FAIL.status)

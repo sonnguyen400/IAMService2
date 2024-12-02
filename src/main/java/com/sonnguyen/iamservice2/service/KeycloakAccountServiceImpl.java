@@ -37,12 +37,22 @@ public class KeycloakAccountServiceImpl implements AccountService {
     private Keycloak keycloak;
     @Autowired
     private AccountServiceImpl accountServiceImpl;
-
+    @Override
+    public void resetPasswordByAccountId(Long accountId,String rawPassword)  {
+        Account account=accountServiceImpl.findById(accountId);
+        UserRepresentation userRepresentation=findByEmail(account.getEmail());
+        CredentialRepresentation newCredential=new CredentialRepresentation();
+        newCredential.setType(CredentialRepresentation.PASSWORD);
+        newCredential.setValue(rawPassword);
+        keycloak.realm(realm).users().get(userRepresentation.getId()).resetPassword(newCredential);
+        accountServiceImpl.resetPasswordByAccountId(accountId,rawPassword);
+    }
     @Override
     public void register(UserRegistrationPostVm userRegistrationPostVm) {
         Account account=userRegistrationPostVm.toEntity();
         account.setLocked(false);
-        UserRepresentation userRepresentation=createKeycloakUser(account);
+        account.setVerified(true);
+        createKeycloakUser(account);
         accountServiceImpl.saveAccount(account);
     }
 

@@ -44,7 +44,7 @@ public class SecurityConfig {
     @Bean
     @ConditionalOnProperty(
             value = "default-idp",
-            havingValue = ""
+            havingValue = "default"
     )
     public SecurityFilterChain configSecurity(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(request -> {
