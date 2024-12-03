@@ -33,7 +33,7 @@ public class SearchUtils {
     public static List<Sort.Order> parseSort(Map<String,String[]> parameterMap) {
         List<Sort.Order> sortItem = new ArrayList<>();
         String[] ordersParam=parameterMap.get("order");
-        if(ordersParam.length<1) return List.of();
+        if(ordersParam==null||ordersParam.length<1) return List.of();
         for(String param:ordersParam) {
             String[] extractOrder=param.split("[()]");
             if(extractOrder.length==2){

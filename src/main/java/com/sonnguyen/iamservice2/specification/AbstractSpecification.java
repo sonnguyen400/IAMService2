@@ -3,6 +3,7 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import org.hibernate.sql.Restriction;
 
 import java.sql.Timestamp;
 
@@ -26,7 +27,7 @@ public abstract class AbstractSpecification<T> implements GeneralSpecification<T
         }
         else if (criteria.getOperation()==DynamicSearch.Operator.LIKE) {
             return builder.like(
-                    root.get(criteria.getKey()), criteria.getValue().toString());
+                    builder.lower(root.get(criteria.getKey())), criteria.getValue().toString().toLowerCase());
         }
         else if(criteria.getOperation()==DynamicSearch.Operator.LT){
             return builder.lessThan(
