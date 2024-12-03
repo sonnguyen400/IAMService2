@@ -44,3 +44,5 @@ application:
   token:
     verify_account:
       live-time-secs: 1800
+springdoc:
+  show-actuator: true

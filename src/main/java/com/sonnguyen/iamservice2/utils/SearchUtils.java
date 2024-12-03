@@ -1,6 +1,5 @@
 package com.sonnguyen.iamservice2.utils;
 
-import com.sonnguyen.iamservice2.specification.AccountSpecification;
 import com.sonnguyen.iamservice2.specification.DynamicSearch;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
