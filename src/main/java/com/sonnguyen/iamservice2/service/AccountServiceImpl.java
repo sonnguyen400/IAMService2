@@ -90,11 +90,10 @@ public class AccountServiceImpl implements AccountService {
     }
     public Page<UserDetailGetVm> findAll(List<AccountSpecification> specifications, Pageable pageable){
         if(!specifications.isEmpty()){
-            Specification<Account> predicates= Specification.where(specifications.getFirst());
+            Specification<Account> predicates= specifications.getFirst();
             for(int i=1;i<specifications.size();i++){
-                predicates.or(specifications.get(i));
+                predicates=predicates.and(specifications.get(i));
             }
-            System.out.println("Find All");
             return accountRepository.findAll(predicates,pageable).map(UserDetailGetVm::fromEntity);
         }
         return accountRepository.findAll(pageable).map(UserDetailGetVm::fromEntity);

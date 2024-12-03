@@ -18,7 +18,9 @@ public class DynamicSearch {
         GTE("gte"),
         LIKE("like"),
         IN("in"),
-        EQUALS("eq");
+        EQUALS("eq"),
+        BEFORE("before"),
+        AFTER("after");
         public final String value;
         Operator(String value){
             this.value=value;

@@ -4,6 +4,8 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
+import java.sql.Timestamp;
+
 
 public abstract class AbstractSpecification<T> implements GeneralSpecification<T> {
     private final DynamicSearch criteria;
@@ -16,19 +18,19 @@ public abstract class AbstractSpecification<T> implements GeneralSpecification<T
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
         if (criteria.getOperation()== DynamicSearch.Operator.GTE) {
             return builder.greaterThanOrEqualTo(
-                    root.<String> get(criteria.getKey()), criteria.getValue().toString());
+                    root.get(criteria.getKey()), criteria.getValue().toString());
         }
         else if (criteria.getOperation()==DynamicSearch.Operator.LTE) {
             return builder.lessThanOrEqualTo(
-                    root.<String> get(criteria.getKey()), criteria.getValue().toString());
+                    root.get(criteria.getKey()), criteria.getValue().toString());
         }
         else if (criteria.getOperation()==DynamicSearch.Operator.LIKE) {
             return builder.like(
-                    root.<String>get(criteria.getKey()), criteria.getValue()+"%" );
+                    root.get(criteria.getKey()), criteria.getValue().toString());
         }
         else if(criteria.getOperation()==DynamicSearch.Operator.LT){
             return builder.lessThan(
-                    root.<String>get(criteria.getKey()),criteria.getValue().toString());
+                    root.get(criteria.getKey()),criteria.getValue().toString());
         }else if(criteria.getOperation()==DynamicSearch.Operator.GT){
             return builder.greaterThan(
                     root.<String>get(criteria.getKey()),criteria.getValue().toString());
@@ -36,6 +38,12 @@ public abstract class AbstractSpecification<T> implements GeneralSpecification<T
         else if(criteria.getOperation()==DynamicSearch.Operator.EQUALS){
             return builder.equal(
                     root.<String>get(criteria.getKey()),criteria.getValue().toString());
+        }else if(criteria.getOperation()==DynamicSearch.Operator.BEFORE){
+            return builder.lessThan(
+                    root.<Timestamp>get(criteria.getKey()),Timestamp.valueOf(criteria.getValue().toString()));
+        } else if(criteria.getOperation()==DynamicSearch.Operator.AFTER){
+            return builder.greaterThan(
+                    root.<Timestamp>get(criteria.getKey()),Timestamp.valueOf(criteria.getValue().toString()));
         }
         return null;
     }
