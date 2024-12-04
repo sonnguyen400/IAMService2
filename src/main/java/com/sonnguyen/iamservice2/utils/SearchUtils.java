@@ -8,19 +8,27 @@ import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 @Slf4j
 public class SearchUtils {
     public static List<DynamicSearch> parseOperator(Map<String,String[]> parameterMap) {
+        String regex = "(\\w+)\\((.*?)\\)";
         List<DynamicSearch> searchItem = new ArrayList<>();
         for(Map.Entry<String,String[]> set : parameterMap.entrySet()) {
             if(set.getKey().equals("page")||set.getKey().equals("size")||set.getKey().equals("order")) continue;
             for(String value:set.getValue()){
-                String[] extractOperatorValue=value.split("[()]");
-                if(extractOperatorValue.length==2){
-                    String searchValue=extractOperatorValue[1];
-                    DynamicSearch.Operator operator=DynamicSearch.Operator.valueOf(extractOperatorValue[0].toUpperCase());
+                Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+                Matcher matcher = pattern.matcher(value);
+                if(matcher.matches()){
+                    String searchValue=matcher.group(2);
+                    DynamicSearch.Operator operator=DynamicSearch.Operator.valueOf(matcher.group(1).toUpperCase());
                     searchItem.add(new DynamicSearch(set.getKey(),searchValue,operator));
-                    log.info("key: {} value: {} operator: {}",set.getKey(),searchValue,operator);
+                    log.info("Search with key: {} value: {} operator: {}",set.getKey(),searchValue,operator);
+                }else{
+                    searchItem.add(new DynamicSearch(set.getKey(),value, DynamicSearch.Operator.DEFAULT_LIKE));
+                    log.info("Search with key: {} value: {}",set.getKey(),value);
                 }
             }
         }

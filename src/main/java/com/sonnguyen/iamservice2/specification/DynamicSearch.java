@@ -12,18 +12,14 @@ public class DynamicSearch {
     private Object value;
     private Operator operation;
     public enum Operator{
-        LT("lt"),
-        GT("gt"),
-        LTE("lte"),
-        GTE("gte"),
-        LIKE("like"),
-        IN("in"),
-        EQUALS("eq"),
-        BEFORE("before"),
-        AFTER("after");
-        public final String value;
-        Operator(String value){
-            this.value=value;
-        }
+        LT,
+        GT,
+        LTE,
+        GTE,
+        LIKE,
+        EQUAL,
+        BEFORE,
+        AFTER,
+        DEFAULT_LIKE;
     }
 }
