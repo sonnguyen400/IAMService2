@@ -46,7 +46,7 @@ public class RoleController {
     }
     @PostMapping
     @PreAuthorize("hasPermission('ROLE','CREATE')")
-    public List<RoleGetVm> createRoles(@RequestBody@NotEmpty List<@Valid RolePostVm> roles){
+    public RoleGetVm createRoles(@RequestBody@NotEmpty RolePostVm roles){
         return roleService.createRoles(roles);
     }
 

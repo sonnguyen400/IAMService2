@@ -1,8 +1,10 @@
 package com.sonnguyen.iamservice2.service;
 
+import com.sonnguyen.iamservice2.constant.ActivityType;
 import com.sonnguyen.iamservice2.constant.IDTokenType;
 import com.sonnguyen.iamservice2.exception.TokenException;
 import com.sonnguyen.iamservice2.model.Otp;
+import com.sonnguyen.iamservice2.model.UserActivityLog;
 import com.sonnguyen.iamservice2.model.UserDetails;
 import com.sonnguyen.iamservice2.utils.JWTUtilsImpl;
 import com.sonnguyen.iamservice2.viewmodel.*;
@@ -52,6 +54,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     OtpService otpService;
     @Value("${application.token.verify_account.live-time-secs}")
     private long verifyAccountTokenLiveTimeSecs;
+    UserActivityLogService logService;
 
     public ResponseEntity<?> requestVerifyAccount(String email){
         try {
@@ -90,6 +93,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Authentication usernamePasswordAuth=new UsernamePasswordAuthenticationToken(loginPostVm.email(), loginPostVm.password());
         authenticationManager.authenticate(usernamePasswordAuth);
         try {
+            logService.saveActivityLog(UserActivityLog.builder().activityType(ActivityType.LOGIN).build());
             return handleLoginSuccessRequest(loginPostVm.email());
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -120,6 +124,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if(email!=null&&type!=null&&type.equalsIgnoreCase(IDTokenType.ACCEPT_LOGIN.value)){
             otpService.validateOtp(email,acceptedLoginRequestVm.otp());
             UserDetails userDetails=userDetailsService.loadUserByUsername(email);
+            logService.saveActivityLog(UserActivityLog.builder().activityType(ActivityType.LOGIN).build());
             return generateResponseToken(email,userDetails.getAuthorities());
         }
         throw new TokenException("Invalid token");
@@ -140,6 +145,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
     public void logout(RequestTokenVm requestTokenVm){
+        logService.saveActivityLog(UserActivityLog.builder().activityType(ActivityType.LOGOUT).build());
         forbiddenTokenService.saveToken(requestTokenVm.access_token());
         forbiddenTokenService.saveToken(requestTokenVm.refresh_token());
     }
@@ -179,6 +185,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     public ResponseEntity<?> changePassword(ChangePasswordPostVm changePasswordPostVm){
+        logService.saveActivityLog(UserActivityLog.builder().activityType(ActivityType.MODIFY_PASSWORD).build());
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken=new UsernamePasswordAuthenticationToken(changePasswordPostVm.email(),changePasswordPostVm.oldPassword());
         authenticationManager.authenticate(usernamePasswordAuthenticationToken);
         accountService.updatePasswordByEmail(changePasswordPostVm);

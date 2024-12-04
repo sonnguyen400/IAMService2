@@ -2,6 +2,7 @@ package com.sonnguyen.iamservice2.service;
 
 import com.sonnguyen.iamservice2.model.AccountRole;
 import com.sonnguyen.iamservice2.model.RolePermission;
+import com.sonnguyen.iamservice2.repository.AccountRoleRepository;
 import com.sonnguyen.iamservice2.repository.RolePermissionRepository;
 import com.sonnguyen.iamservice2.viewmodel.PermissionGetVm;
 import jakarta.transaction.Transactional;
@@ -16,7 +17,7 @@ import java.util.List;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
 public class RolePermissionService {
-    AccountRoleService accountRoleService;
+    AccountRoleRepository accountRoleRepository;
     RolePermissionRepository rolePermissionRepository;
     PermissionService permissionService;
     public List<RolePermission> findAllByRoleId(Long roleId){
@@ -45,7 +46,7 @@ public class RolePermissionService {
                 .build();
     }
     public List<RolePermission> findAllByAccountId(Long accountId){
-        List<AccountRole> accountRoles=accountRoleService.findAllByAccountId(accountId);
+        List<AccountRole> accountRoles=accountRoleRepository.findAllByAccountId(accountId);
         List<Long> roleIds=accountRoles.stream().map(AccountRole::getRole_id).toList();
         return rolePermissionRepository.findAllByRoleIdIn(roleIds);
     }

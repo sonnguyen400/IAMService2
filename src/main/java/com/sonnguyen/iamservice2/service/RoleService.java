@@ -21,16 +21,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RoleService {
     RoleRepository roleRepository;
+    RolePermissionService rolePermissionService;
     AccountRoleRepository accountRoleRepository;
     public Page<RoleGetVm> findAll(Pageable pageable){
         return roleRepository.findAll(pageable).map(RoleGetVm::fromEntity);
     }
-    public List<RoleGetVm> createRoles(List<RolePostVm> rolePostVms){
-        List<Role> roles=rolePostVms.stream().map(RolePostVm::toEntity).toList();
-        return roleRepository
-                .saveAll(roles)
-                .stream().map(RoleGetVm::fromEntity)
-                .toList();
+    public RoleGetVm createRoles(RolePostVm rolePostVms){
+        Role role=rolePostVms.toEntity();
+        Role savedRole=roleRepository.save(role);
+        rolePermissionService.updateRolePermission(role.getId(),rolePostVms.permissions());
+        return RoleGetVm.fromEntity(savedRole);
     }
     public List<RoleGetVm> findAllByIdIn(List<Long> id){
         return roleRepository.findAllByIdIn(id)

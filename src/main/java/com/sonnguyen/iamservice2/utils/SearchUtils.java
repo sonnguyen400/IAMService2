@@ -32,10 +32,6 @@ public class SearchUtils {
                 }
             }
         }
-        parameterMap.forEach((key,values)->{
-
-
-        });
         return searchItem;
     }
     public static List<Sort.Order> parseSort(Map<String,String[]> parameterMap) {

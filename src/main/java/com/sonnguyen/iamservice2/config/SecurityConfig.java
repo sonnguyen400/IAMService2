@@ -1,6 +1,7 @@
 package com.sonnguyen.iamservice2.config;
 
 import com.sonnguyen.iamservice2.security.JwtFilter;
+import com.sonnguyen.iamservice2.security.LockAccountFilter;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -20,6 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class SecurityConfig {
     JwtFilter jwtFilter;
+    LockAccountFilter lockAccountFilter;
 
     @Bean
     public SecurityFilterChain configSecurityWithExternalIdp(HttpSecurity http) throws Exception {
@@ -29,7 +31,8 @@ public class SecurityConfig {
                     .anyRequest().authenticated();
         });
         http.csrf(AbstractHttpConfigurer::disable);
-        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(lockAccountFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 }

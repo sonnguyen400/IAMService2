@@ -29,7 +29,7 @@ public abstract class AbstractSpecification<T> implements GeneralSpecification<T
             case GT -> builder.greaterThan(
                     root.<String>get(criteria.getKey()),criteria.getValue().toString());
             case EQUAL -> builder.equal(
-                    root.<String>get(criteria.getKey()),criteria.getValue().toString());
+                    root.get(criteria.getKey()),parseObject(root.get(criteria.getKey()).getJavaType(),criteria.getValue().toString()));
             case BEFORE -> builder.lessThan(
                     root.<Timestamp>get(criteria.getKey()),Timestamp.valueOf(criteria.getValue().toString()));
             case AFTER ->  builder.greaterThan(
@@ -37,5 +37,20 @@ public abstract class AbstractSpecification<T> implements GeneralSpecification<T
             default -> builder.like(
                     builder.lower(root.get(criteria.getKey())), String.format("%%%s%%",criteria.getValue().toString().toLowerCase()));
         };
+    }
+    private static  <S> S parseObject(Class<S> clazz,String object){
+        System.out.println(clazz);
+        if(clazz==Long.class){
+            return  (S) Long.valueOf(object);
+        }else if(clazz==Integer.class){
+            return (S) Integer.valueOf(object);
+        }else if(clazz==Double.class){
+            return (S) Double.valueOf(object);
+        }else if(clazz==Boolean.class){
+            return (S) Boolean.valueOf(object);
+        }else if(clazz== Float.class){
+            return (S) Boolean.valueOf(object);
+        }
+        return (S) object;
     }
 }

@@ -1,5 +1,7 @@
 package com.sonnguyen.iamservice2.service;
 
+import com.sonnguyen.iamservice2.constant.ActivityType;
+import com.sonnguyen.iamservice2.model.UserActivityLog;
 import com.sonnguyen.iamservice2.viewmodel.ChangePasswordPostVm;
 import com.sonnguyen.iamservice2.viewmodel.LoginPostVm;
 import com.sonnguyen.iamservice2.viewmodel.RequestTokenVm;
@@ -25,7 +27,8 @@ public class KeycloakAuthenticationServiceImpl implements AuthenticationService 
     KeycloakClientService keycloakClientService;
     @Autowired
     AccountService keycloakAccountService;
-
+    @Autowired
+    UserActivityLogService logService;
     @Value("${keycloak.client-id}")
     private String clientId;
     @Value("${keycloak.client-secret}")
@@ -33,6 +36,7 @@ public class KeycloakAuthenticationServiceImpl implements AuthenticationService 
 
     @Override
     public ResponseEntity<?> login(@Nullable LoginPostVm loginPostVm) {
+        logService.saveActivityLog(UserActivityLog.builder().activityType(ActivityType.LOGIN).build());
         return ResponseEntity.ok("Redirect to Keycloak to get token");
     }
 
@@ -46,6 +50,7 @@ public class KeycloakAuthenticationServiceImpl implements AuthenticationService 
         ));
     }
     public void logout(RequestTokenVm requestTokenVm) {
+        logService.saveActivityLog(UserActivityLog.builder().activityType(ActivityType.LOGIN).build());
         keycloakClientService.logout(Map.of(
                 "client_id",clientId,
                 "client_secret",clientSecret,
@@ -54,6 +59,7 @@ public class KeycloakAuthenticationServiceImpl implements AuthenticationService 
     }
 
     public ResponseEntity<?> changePassword(ChangePasswordPostVm changePasswordPostVm) {
+        logService.saveActivityLog(UserActivityLog.builder().activityType(ActivityType.LOGIN).build());
         keycloakAccountService.updatePasswordByEmail(changePasswordPostVm);
         return ResponseEntity.ok("Change password successfully");
     }
