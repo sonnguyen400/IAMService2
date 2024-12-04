@@ -1,5 +1,6 @@
 package com.sonnguyen.iamservice2.service;
 
+import com.sonnguyen.iamservice2.viewmodel.ChangePasswordPostVm;
 import com.sonnguyen.iamservice2.viewmodel.LoginPostVm;
 import com.sonnguyen.iamservice2.viewmodel.RequestTokenVm;
 import com.sonnguyen.iamservice2.viewmodel.ResponseTokenVm;
@@ -32,6 +33,9 @@ public class KeycloakAuthenticationServiceImpl implements AuthenticationService 
     private OAuth2AuthorizedClientService oauth2AuthorizedClientService;
     @Autowired
     KeycloakClientService keycloakClientService;
+    @Autowired
+    AccountService keycloakAccountService;
+
     @Value("${spring.security.oauth2.client.registration.keycloak.client-id}")
     private String clientId;
     @Value("${spring.security.oauth2.client.registration.keycloak.client-secret}")
@@ -63,5 +67,10 @@ public class KeycloakAuthenticationServiceImpl implements AuthenticationService 
                 "client_secret",clientSecret,
                 "refresh_token",requestTokenVm.refresh_token()
         ));
+    }
+
+    public ResponseEntity<?> changePassword(ChangePasswordPostVm changePasswordPostVm) {
+        keycloakAccountService.updatePasswordByEmail(changePasswordPostVm);
+        return ResponseEntity.ok("Change password successfully");
     }
 }

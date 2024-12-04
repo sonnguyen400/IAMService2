@@ -1,15 +1,12 @@
 package com.sonnguyen.iamservice2.service;
 
 import com.sonnguyen.iamservice2.exception.DuplicatedException;
+import com.sonnguyen.iamservice2.exception.ResourceNotFoundException;
 import com.sonnguyen.iamservice2.model.Account;
 import com.sonnguyen.iamservice2.repository.AccountRepository;
 import com.sonnguyen.iamservice2.specification.AccountSpecification;
-import com.sonnguyen.iamservice2.viewmodel.UserCreationPostVm;
-import com.sonnguyen.iamservice2.viewmodel.UserDetailGetVm;
-import com.sonnguyen.iamservice2.viewmodel.UserProfilePostVm;
-import com.sonnguyen.iamservice2.viewmodel.UserRegistrationPostVm;
+import com.sonnguyen.iamservice2.viewmodel.*;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +29,12 @@ public class AccountServiceImpl implements AccountService {
     PasswordEncoder passwordEncoder;
     public Account findById(Long id) {
         return accountRepository.findById(id)
-                .orElseThrow(()-> new NotFoundException("Account not found"));
+                .orElseThrow(()-> new ResourceNotFoundException("Account not found"));
+    }
+    public UserDetailGetVm findAccountDetailById(Long id){
+        return accountRepository.findById(id)
+                .map(UserDetailGetVm::fromEntity)
+                .orElseThrow(()->new ResourceNotFoundException("Account not found"));
     }
     public Optional<Account> findByEmail(String username) {
         return accountRepository.findByEmail(username);
@@ -105,6 +107,7 @@ public class AccountServiceImpl implements AccountService {
         accountRepository.resetPasswordByAccountId(accountId,password);
     }
 
+
     public void updateAccountProfileById(Long accountId, UserProfilePostVm userProfilePostVm){
         Account oldAccount=findById(accountId);
         Account newAccount=mapNewAccountProfile(oldAccount,userProfilePostVm);
@@ -118,6 +121,11 @@ public class AccountServiceImpl implements AccountService {
         oldAccount.setDateOfBirth(userProfilePostVm.dateOfBirth());
         return oldAccount;
     }
-
+    @Transactional
+    @Override
+    public void updatePasswordByEmail(ChangePasswordPostVm changePasswordPostVm){
+        String encodedPassword=passwordEncoder.encode(changePasswordPostVm.newPassword());
+        accountRepository.updatePasswordByEmail(changePasswordPostVm.email(),encodedPassword);
+    }
 
 }

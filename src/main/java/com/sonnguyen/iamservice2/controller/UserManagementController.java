@@ -6,6 +6,7 @@ import com.sonnguyen.iamservice2.service.AccountServiceImpl;
 import com.sonnguyen.iamservice2.specification.AccountSpecification;
 import com.sonnguyen.iamservice2.specification.DynamicSearch;
 import com.sonnguyen.iamservice2.utils.SearchUtils;
+import com.sonnguyen.iamservice2.viewmodel.ChangePasswordPostVm;
 import com.sonnguyen.iamservice2.viewmodel.UserCreationPostVm;
 import com.sonnguyen.iamservice2.viewmodel.UserDetailGetVm;
 import com.sonnguyen.iamservice2.viewmodel.UserProfilePostVm;
@@ -47,6 +48,10 @@ public class UserManagementController {
     public ResponseEntity<?> deleteUserByEmail(@RequestParam String email){
         return accountService.deleteByEmail(email);
     }
+    @GetMapping(value = "/{account_id}")
+    public UserDetailGetVm getUserById(@PathVariable(name = "account_id") Long id){
+        return accountServiceImpl.findAccountDetailById(id);
+    }
     @GetMapping
     @PreAuthorize("hasPermission('USER','USER_VIEW')")
     public Page<UserDetailGetVm> findAll(
@@ -58,16 +63,16 @@ public class UserManagementController {
         List<AccountSpecification> accountSpecification=parseRequestToSpecification(request);
         return accountServiceImpl.findAll(accountSpecification,PageRequest.of(page,size).withSort(sort));
     }
-    @PostMapping(value = "/{id}/delete")
-    public ResponseEntity<?> deleteById(@PathVariable Long id){
+    @PostMapping(value = "/{account_id}/delete")
+    public ResponseEntity<?> deleteById(@PathVariable(name="account_id") Long id){
         return accountServiceImpl.deleteById(id);
     }
-    @PostMapping("/{id}/updateRole")
-    public void updateRole(@PathVariable Long id, @RequestBody List<Long> roleIds){
+    @PostMapping("/{account_id}/updateRole")
+    public void updateRole(@PathVariable(name="account_id") Long id, @RequestBody List<Long> roleIds){
         accountRoleService.updateAccountRoles(id,roleIds);
     }
-    @PostMapping("/{id}/resetpassword")
-    public void resetPassword(@PathVariable Long id,
+    @PostMapping("/{account_id}/resetpassword")
+    public void resetPassword(@PathVariable(name = "account_id") Long id,
                               @RequestParam String password){
         accountService.resetPasswordByAccountId(id,password);
     }
@@ -77,6 +82,10 @@ public class UserManagementController {
         accountServiceImpl.updateAccountProfileById(id,userProfilePostVm);
     }
 
+    @PostMapping("/password/change")
+    public void changePassword(@RequestBody ChangePasswordPostVm changePasswordPostVm){
+        accountServiceImpl.updatePasswordByEmail(changePasswordPostVm);
+    }
     private List<AccountSpecification> parseRequestToSpecification(HttpServletRequest request){
         List<AccountSpecification> accountSpecifications=new ArrayList<>();
         Map<String,String[]> parameterMap=request.getParameterMap();

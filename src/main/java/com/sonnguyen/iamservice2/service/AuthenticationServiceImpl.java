@@ -5,10 +5,7 @@ import com.sonnguyen.iamservice2.exception.TokenException;
 import com.sonnguyen.iamservice2.model.Otp;
 import com.sonnguyen.iamservice2.model.UserDetails;
 import com.sonnguyen.iamservice2.utils.JWTUtilsImpl;
-import com.sonnguyen.iamservice2.viewmodel.AcceptedLoginRequestVm;
-import com.sonnguyen.iamservice2.viewmodel.LoginPostVm;
-import com.sonnguyen.iamservice2.viewmodel.RequestTokenVm;
-import com.sonnguyen.iamservice2.viewmodel.ResponseTokenVm;
+import com.sonnguyen.iamservice2.viewmodel.*;
 import io.jsonwebtoken.Claims;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -181,6 +178,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
     }
 
+    public ResponseEntity<?> changePassword(ChangePasswordPostVm changePasswordPostVm){
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken=new UsernamePasswordAuthenticationToken(changePasswordPostVm.email(),changePasswordPostVm.oldPassword());
+        authenticationManager.authenticate(usernamePasswordAuthenticationToken);
+        accountService.updatePasswordByEmail(changePasswordPostVm);
+        return ResponseEntity.ok("Change password successfully");
+    }
     public static Collection<? extends GrantedAuthority> extractAuthoritiesFromString(String authorities) {
         if (authorities.isEmpty()) return List.of();
         List<String> scopes = Arrays.stream(authorities.split(" ")).toList();

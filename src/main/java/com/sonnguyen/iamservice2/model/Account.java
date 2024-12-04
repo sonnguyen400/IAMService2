@@ -3,6 +3,7 @@ package com.sonnguyen.iamservice2.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Filter;
 
 import java.util.Date;
 

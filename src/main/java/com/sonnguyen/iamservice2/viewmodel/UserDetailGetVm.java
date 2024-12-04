@@ -12,7 +12,7 @@ public record UserDetailGetVm(
         String phone,
         String address,
         String picture,
-        Date dateOfBirth,
+        String dateOfBirth,
         Boolean locked,
         Boolean verified
 ) {
@@ -24,7 +24,7 @@ public record UserDetailGetVm(
                 account.getPhone(),
                 account.getAddress(),
                 account.getPicture(),
-                account.getDateOfBirth(),
+                account.getDateOfBirth().toInstant().toString(),
                 account.isLocked(),
                 account.isVerified());
     }

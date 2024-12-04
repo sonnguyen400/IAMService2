@@ -2,6 +2,7 @@ package com.sonnguyen.iamservice2.service;
 
 import com.sonnguyen.iamservice2.exception.KeycloakException;
 import com.sonnguyen.iamservice2.model.Account;
+import com.sonnguyen.iamservice2.viewmodel.ChangePasswordPostVm;
 import com.sonnguyen.iamservice2.viewmodel.UserCreationPostVm;
 import com.sonnguyen.iamservice2.viewmodel.UserRegistrationPostVm;
 import jakarta.ws.rs.core.Response;
@@ -16,6 +17,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,6 +37,8 @@ public class KeycloakAccountServiceImpl implements AccountService {
     private Keycloak keycloak;
     @Autowired
     private AccountServiceImpl accountServiceImpl;
+    @Autowired
+    private AuthenticationManager authenticationManager;
     @Override
     public void resetPasswordByAccountId(Long accountId,String rawPassword)  {
         Account account=accountServiceImpl.findById(accountId);
@@ -129,5 +134,11 @@ public class KeycloakAccountServiceImpl implements AccountService {
         return ResponseEntity
                 .status(response.getStatus())
                 .body(response.readEntity(String.class));
+    }
+    public void updatePasswordByEmail(ChangePasswordPostVm changePasswordPostVm){
+        UsernamePasswordAuthenticationToken authenticationToken=new UsernamePasswordAuthenticationToken(changePasswordPostVm.email(),changePasswordPostVm.oldPassword());
+        authenticationManager.authenticate(authenticationToken);
+        accountServiceImpl.updatePasswordByEmail(changePasswordPostVm);
+        UserRepresentation userRepresentation=findByEmail(changePasswordPostVm.email());
     }
 }
