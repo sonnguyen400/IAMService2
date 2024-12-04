@@ -20,6 +20,9 @@ public interface RolePermissionRepository extends JpaRepository<RolePermission,L
     @Query("update RolePermission p set p.deleted=true where p.role_id= :roleId and p.permission_id not in :permissionIds")
     void deleteByRoleIdAndUpdatedPermission(@Param("roleId") Long role_id,@Param("permissionIds") List<Long> permissionId);
     @Modifying
+    @Query("update RolePermission set deleted=true where role_id=?1")
+    void softDeleteByRoleId(Long roleId);
+    @Modifying
     @Query("select r from RolePermission r where r.role_id in :roleIds and r.deleted=false")
     List<RolePermission> findAllByRoleIdIn(@Param("roleIds") List<Long> roleIds);
 }

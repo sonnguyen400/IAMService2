@@ -17,6 +17,8 @@ public record UserDetailGetVm(
         Boolean verified
 ) {
     public static UserDetailGetVm fromEntity(Account account){
+        Date dateOfBirth = account.getDateOfBirth();
+        String dob=dateOfBirth!=null?dateOfBirth.toString():"";
         return new UserDetailGetVm(account.getId(),
                 account.getEmail(),
                 account.getFirstName(),
@@ -24,7 +26,7 @@ public record UserDetailGetVm(
                 account.getPhone(),
                 account.getAddress(),
                 account.getPicture(),
-                account.getDateOfBirth().toInstant().toString(),
+                dob,
                 account.isLocked(),
                 account.isVerified());
     }

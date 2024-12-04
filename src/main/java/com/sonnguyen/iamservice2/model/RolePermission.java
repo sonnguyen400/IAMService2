@@ -1,9 +1,7 @@
 package com.sonnguyen.iamservice2.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.sonnguyen.iamservice2.constant.Scope;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,7 +20,8 @@ public class RolePermission extends AbstractAuditEntity{
     private Long permission_id;
     private Long role_id;
     private String resource_code;
-    private String scope;
+    @Enumerated(EnumType.STRING)
+    private Scope scope;
     @ColumnDefault(value = "false")
     private boolean deleted;
 }

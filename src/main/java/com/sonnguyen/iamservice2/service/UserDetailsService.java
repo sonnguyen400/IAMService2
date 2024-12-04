@@ -29,7 +29,7 @@ public class UserDetailsService {
                     UserDetails userDetails=fromAccount(account_);
                     List<RolePermission> rolePermissions=rolePermissionService.findAllByAccountId(account_.getId());
                     Collection<? extends GrantedAuthority> authorities = rolePermissions.stream().map((rolePermission ->{
-                        String authority=String.format("%s_%s",rolePermission.getResource_code().toUpperCase(),rolePermission.getScope().toUpperCase());
+                        String authority=String.format("%s_%s",rolePermission.getResource_code().toUpperCase(),rolePermission.getScope().name());
                         return new SimpleGrantedAuthority(authority);
                     })).toList();
                     userDetails.setAuthorities(authorities);

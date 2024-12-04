@@ -35,6 +35,7 @@ public class JwtFilterImpl extends OncePerRequestFilter implements JwtFilter {
         Claims claims = validateToken(request);
         if (claims != null && !claims.getSubject().isEmpty()) {
             Collection<? extends GrantedAuthority> authorities = AuthenticationServiceImpl.extractAuthoritiesFromString(claims.get("scope", String.class));
+            logger.info("User authorities: " + authorities);
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(claims.getSubject(), null, authorities);
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         }

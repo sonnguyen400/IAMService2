@@ -9,20 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Primary;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.core.OAuth2RefreshToken;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
 @Service
-@Order(Ordered.LOWEST_PRECEDENCE - 1)
 @Primary
 @ConditionalOnProperty(
         value = "default-idp",
@@ -30,26 +22,18 @@ import java.util.Map;
 )
 public class KeycloakAuthenticationServiceImpl implements AuthenticationService {
     @Autowired
-    private OAuth2AuthorizedClientService oauth2AuthorizedClientService;
-    @Autowired
     KeycloakClientService keycloakClientService;
     @Autowired
     AccountService keycloakAccountService;
 
-    @Value("${spring.security.oauth2.client.registration.keycloak.client-id}")
+    @Value("${keycloak.client-id}")
     private String clientId;
-    @Value("${spring.security.oauth2.client.registration.keycloak.client-secret}")
+    @Value("${keycloak.client-secret}")
     private String clientSecret;
 
     @Override
     public ResponseEntity<?> login(@Nullable LoginPostVm loginPostVm) {
-        OAuth2AuthenticationToken authentication = (OAuth2AuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-        OAuth2AuthorizedClient oAuth2AuthorizedClient = oauth2AuthorizedClientService.loadAuthorizedClient(authentication.getAuthorizedClientRegistrationId(), authentication.getName());
-        OAuth2RefreshToken oAuth2RefreshToken=oAuth2AuthorizedClient.getRefreshToken();
-        String access_token=oAuth2AuthorizedClient.getAccessToken().getTokenValue();
-        String refresh_token=oAuth2RefreshToken!=null?oAuth2RefreshToken.getTokenValue():"";
-        ResponseTokenVm responseBody = new ResponseTokenVm(access_token,refresh_token);
-        return ResponseEntity.ok(responseBody);
+        return ResponseEntity.ok("Redirect to Keycloak to get token");
     }
 
     @Override

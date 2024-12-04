@@ -1,6 +1,7 @@
 package com.sonnguyen.iamservice2.controller;
 
 import com.sonnguyen.iamservice2.service.AccountService;
+import com.sonnguyen.iamservice2.service.AccountServiceImpl;
 import com.sonnguyen.iamservice2.service.AuthenticationService;
 import com.sonnguyen.iamservice2.service.AuthenticationServiceImpl;
 import com.sonnguyen.iamservice2.viewmodel.*;
@@ -18,6 +19,7 @@ public class AuthenticationController {
     AuthenticationService authenticationService;
     AccountService accountService;
     AuthenticationServiceImpl authenticationServiceImpl;
+    AccountServiceImpl accountServiceImpl;
     @PostMapping(value = "/login")
     public ResponseEntity<?> login(@RequestBody LoginPostVm loginPostVm) {
         return authenticationService.login(loginPostVm);
@@ -50,6 +52,10 @@ public class AuthenticationController {
     @PostMapping(value = "/token/refresh")
     public ResponseTokenVm refreshToken(@RequestParam String refresh_token){
         return authenticationService.refreshToken(refresh_token);
+    }
+    @PostMapping("/password/change")
+    public void changePassword(@RequestBody ChangePasswordPostVm changePasswordPostVm){
+        authenticationServiceImpl.changePassword(changePasswordPostVm);
     }
 
 }

@@ -12,6 +12,7 @@ public class PermissionEvaluatorConfig implements PermissionEvaluator {
     @Override
     public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
         if(authentication==null||targetDomainObject==null||!(permission instanceof String)) return false;
+        if(isAdmin(authentication)) return true;
         String targetType=targetDomainObject.toString().toUpperCase();
         return containPermission(authentication,targetType, permission.toString().toUpperCase());
     }
@@ -24,6 +25,14 @@ public class PermissionEvaluatorConfig implements PermissionEvaluator {
     private boolean containPermission(Authentication authentication, String targetType, String permission) {
         for(GrantedAuthority authority : authentication.getAuthorities()) {
             if(authority.getAuthority().startsWith(targetType)&&authority.getAuthority().contains(permission)){
+                return true;
+            }
+        }
+        return false;
+    }
+    private boolean isAdmin(Authentication authentication) {
+        for(GrantedAuthority authority : authentication.getAuthorities()) {
+            if(authority.getAuthority().startsWith("ADMIN")&&authority.getAuthority().contains("ALL")){
                 return true;
             }
         }

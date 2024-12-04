@@ -58,6 +58,7 @@ public class keycloakJwtFilterImpl extends OncePerRequestFilter implements JwtFi
             String token = extractBearerTokenFromRequestHeader(request);
             return jwtDecoder.decode(token);
         }catch(Exception e){
+            e.printStackTrace();
             return null;
         }
 

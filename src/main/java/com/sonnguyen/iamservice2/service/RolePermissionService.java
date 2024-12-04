@@ -27,7 +27,7 @@ public class RolePermissionService {
     }
     @Transactional
     public void updateRolePermission(Long roleId,List<Long> permissionIds){
-        rolePermissionRepository.deleteByRoleIdAndUpdatedPermission(roleId,permissionIds);
+        rolePermissionRepository.softDeleteByRoleId(roleId);
         List<PermissionGetVm> permissions=permissionService.findAllByIdIn(permissionIds);
         List<RolePermission> rolePermissions=permissions
                 .stream()
@@ -36,6 +36,7 @@ public class RolePermissionService {
         rolePermissionRepository.saveAll(rolePermissions);
     }
     public RolePermission createByRoleIdAndPermission(Long roleId,PermissionGetVm permission){
+
         return RolePermission.builder()
                 .role_id(roleId)
                 .permission_id(permission.id())

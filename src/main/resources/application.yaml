@@ -10,24 +10,18 @@ spring:
       ddl-auto: update
   security:
     oauth2:
-      client:
-        provider:
-          keycloak:
-            issuer-uri: http://localhost:8080/realms/iam_service
-        registration:
-          keycloak:
-            provider: keycloak
-            client-id: client
-            client-secret: L4cQEfVjcmoA4bzujcpwG23iYmP4iZhn
-            scope: openid
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8080/realms/iam_service/protocol/openid-connect/certs
 default-idp: KEYCLOAK
 keycloak:
+  client-id: client
+  client-secret: L4cQEfVjcmoA4bzujcpwG23iYmP4iZhn
   server-url: http://localhost:8080
-  jwks_uri: http://localhost:8080/realms/iam_service/protocol/openid-connect/certs
   user_management:
     registration:
       realm: "iam_service"
-      username: admin@gmail.com
+      username: admin@mail.com
       password: 123456
 logging:
   level:
