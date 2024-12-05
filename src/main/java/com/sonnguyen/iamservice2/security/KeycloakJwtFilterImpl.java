@@ -26,20 +26,24 @@ import java.io.IOException;
 @Component
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
-@ConditionalOnProperty(value = "keycloak.enable",havingValue = "true")
+@ConditionalOnProperty(
+        value = "default-idp",
+        havingValue = "KEYCLOAK"
+)
 @Primary
 @Slf4j
-public class keycloakJwtFilterImpl extends OncePerRequestFilter implements JwtFilter {
+public class KeycloakJwtFilterImpl extends OncePerRequestFilter implements JwtFilter {
     JwtDecoder jwtDecoder;
     UserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         Jwt jwt = validateToken(request);
-        if(jwt!=null){
+        if (jwt != null) {
             String username = jwt.getClaimAsString("preferred_username");
-            try{
-                UserDetails userDetails = userDetailsService.loadUserByUsername(jwt.getClaimAsString("preferred_username"));
+            try {
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                log.info("authorities {}", userDetails.getAuthorities());
                 Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (UsernameNotFoundException e) {
@@ -50,10 +54,10 @@ public class keycloakJwtFilterImpl extends OncePerRequestFilter implements JwtFi
     }
 
     public Jwt validateToken(HttpServletRequest request) {
-        try{
+        try {
             String token = extractBearerTokenFromRequestHeader(request);
             return jwtDecoder.decode(token);
-        }catch(Exception e){
+        } catch (Exception e) {
             return null;
         }
 

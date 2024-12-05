@@ -11,23 +11,26 @@ spring:
   security:
     oauth2:
       client:
-        provider:
-          keycloak:
-            issuer-uri: http://localhost:8080/realms/iam_service
         registration:
-          keycloak:
-            provider: keycloak
-            client-id: client
-            client-secret: L4cQEfVjcmoA4bzujcpwG23iYmP4iZhn
-            scope: openid
+          google:
+            client-id: 164335260283-8mjhdvcs3jvmd64h1rmsdphcr2n81c4r.apps.googleusercontent.com
+            client-secret: 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
+            authorization-grant-type: authorization_code
+            scope:
+              - email
+              - profile
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8080/realms/iam_service/protocol/openid-connect/certs
+default-idp: KEYCLOAK
 keycloak:
+  client-id: client
+  client-secret: L4cQEfVjcmoA4bzujcpwG23iYmP4iZhn
   server-url: http://localhost:8080
-  enable: false
-  jwks_uri: http://localhost:8080/realms/iam_service/protocol/openid-connect/certs
   user_management:
     registration:
       realm: "iam_service"
-      username: admin
+      username: admin@mail.com
       password: 123456
 logging:
   level:
@@ -44,3 +47,5 @@ application:
   token:
     verify_account:
       live-time-secs: 1800
+springdoc:
+  show-actuator: true

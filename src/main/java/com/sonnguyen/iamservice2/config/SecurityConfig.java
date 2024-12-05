@@ -1,18 +1,17 @@
 package com.sonnguyen.iamservice2.config;
 
-import com.sonnguyen.iamservice2.security.JwtFilter;
-import com.sonnguyen.iamservice2.security.Oauth2SuccessHandler;
+import com.sonnguyen.iamservice2.security.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -22,33 +21,35 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 @EnableMethodSecurity
 public class SecurityConfig {
+    JwtFilterImpl jwtFilterImpl;
+    KeycloakJwtFilterImpl keycloakJwtFilter;
+    LockAccountFilter lockAccountFilter;
+    LoggingFilter loggingFilter;
     Oauth2SuccessHandler oauth2SuccessHandler;
-    JwtFilter jwtFilter;
-
+    Oauth2Service oauth2Service;
     @Bean
-    @Order(1)
-    @ConditionalOnProperty(value = "keycloak.enable", havingValue = "true")
     public SecurityFilterChain configSecurityWithExternalIdp(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(request -> {
             request
-                    .requestMatchers("/api/v1/auth/**").permitAll()
+                    .requestMatchers("/api/v1/auth/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**","/oauth2/**","/login/**").permitAll()
                     .anyRequest().authenticated();
-        }).oauth2Login(oauth2Login -> oauth2Login.successHandler(oauth2SuccessHandler));
+        })
+                .oauth2Login(customize->{
+                    customize
+                            .authorizationEndpoint(authorizationEndpointConfig -> {
+                                authorizationEndpointConfig
+                                        .baseUri("/oauth2/authorize");
+                            })
+                            .userInfoEndpoint(oauthUser->{
+                                oauthUser.userService(oauth2Service);
+                            })
+                            .successHandler(oauth2SuccessHandler);
+                });
         http.csrf(AbstractHttpConfigurer::disable);
-        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-        return http.build();
-    }
-
-    @Bean
-    @ConditionalOnProperty(value = "keycloak.enable", havingValue = "false")
-    public SecurityFilterChain configSecurity(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(request -> {
-            request
-                    .requestMatchers("/api/v1/auth/**").permitAll()
-                    .anyRequest().authenticated();
-        }).oauth2Login(AbstractHttpConfigurer::disable);
-        http.csrf(AbstractHttpConfigurer::disable);
-        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtFilterImpl, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(keycloakJwtFilter,UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(loggingFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(lockAccountFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 }

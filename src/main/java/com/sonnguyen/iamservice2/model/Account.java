@@ -2,6 +2,9 @@ package com.sonnguyen.iamservice2.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
+
+import java.util.Date;
 
 @Entity
 @Getter
@@ -21,7 +24,11 @@ public class Account extends AbstractAuditEntity {
     private String phone;
     private String address;
     private String picture;
-    private Boolean locked;
-    private Boolean verified;
-    private Boolean deleted;
+    private Date dateOfBirth;
+    @ColumnDefault(value = "false")
+    private boolean locked;
+    @ColumnDefault(value = "true")
+    private boolean verified = true;
+    @ColumnDefault(value = "false")
+    private boolean deleted;
 }

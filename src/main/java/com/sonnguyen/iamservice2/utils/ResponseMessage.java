@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ResponseMessage extends AbstractResponseMessage{
+public class ResponseMessage extends AbstractResponseMessage {
     public ResponseMessage() {
         super();
     }

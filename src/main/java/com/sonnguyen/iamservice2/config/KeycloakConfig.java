@@ -10,13 +10,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 @ConditionalOnProperty(
-        value = "keycloak.enable",
-        havingValue = "true"
+        value = "default-idp",
+        havingValue = "KEYCLOAK"
 )
 public class KeycloakConfig {
-    @Value("${spring.security.oauth2.client.registration.keycloak.client-id}")
+    @Value("${keycloak.client-id}")
     private String clientId;
-    @Value("${spring.security.oauth2.client.registration.keycloak.client-secret}")
+    @Value("${keycloak.client-secret}")
     private String clientSecret;
     @Value("${keycloak.user_management.registration.username}")
     private String username;

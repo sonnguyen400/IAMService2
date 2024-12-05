@@ -8,6 +8,8 @@ import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.validation.method.MethodValidationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -28,6 +30,16 @@ public class RestExceptionHandler {
                 .message(e.getConstraintViolations().stream().map((ConstraintViolation::getMessage)).collect(Collectors.joining("\n")))
                 .build();
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseMessage handleIllegalArgument(IllegalArgumentException e) {
+        return ResponseMessage.builder()
+                .status(ResponseMessageStatus.FAIL.status)
+                .message(e.getMessage())
+                .build();
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseMessage handleMethodArgumentException(MethodArgumentNotValidException e) {
@@ -36,6 +48,7 @@ public class RestExceptionHandler {
                 .message(Arrays.stream(e.getDetailMessageArguments()))
                 .build();
     }
+
     @ExceptionHandler(DuplicatedException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseMessage handleDuplicatedException(DuplicatedException e) {
@@ -90,6 +103,26 @@ public class RestExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseMessage handleResourceNotFoundException(ResourceNotFoundException e) {
+        return ResponseMessage
+                .builder()
+                .status(ResponseMessageStatus.FAIL.status)
+                .message(e.getMessage())
+                .build();
+    }
+
+    @ExceptionHandler(MethodValidationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseMessage methodValidationException(MethodValidationException e) {
+        return ResponseMessage
+                .builder()
+                .status(ResponseMessageStatus.FAIL.status)
+                .message(e.getMessage())
+                .build();
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ResponseMessage handleAuthorizationException(AuthorizationDeniedException e) {
         return ResponseMessage
                 .builder()
                 .status(ResponseMessageStatus.FAIL.status)

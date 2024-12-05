@@ -8,6 +8,7 @@ public enum ResponseMessageStatus {
     //Need complement action
     CONTINUOUS(2);
     public final int status;
+
     ResponseMessageStatus(int status) {
         this.status = status;
     }
