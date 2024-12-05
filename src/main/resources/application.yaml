@@ -10,6 +10,15 @@ spring:
       ddl-auto: update
   security:
     oauth2:
+      client:
+        registration:
+          google:
+            client-id: 164335260283-8mjhdvcs3jvmd64h1rmsdphcr2n81c4r.apps.googleusercontent.com
+            client-secret: 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
+            authorization-grant-type: authorization_code
+            scope:
+              - email
+              - profile
       resourceserver:
         jwt:
           jwk-set-uri: http://localhost:8080/realms/iam_service/protocol/openid-connect/certs

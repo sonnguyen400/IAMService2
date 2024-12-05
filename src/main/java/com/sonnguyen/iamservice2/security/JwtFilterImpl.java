@@ -1,7 +1,6 @@
 package com.sonnguyen.iamservice2.security;
 
 import com.sonnguyen.iamservice2.exception.TokenException;
-import com.sonnguyen.iamservice2.service.AuthenticationServiceImpl;
 import com.sonnguyen.iamservice2.service.ForbiddenTokenService;
 import com.sonnguyen.iamservice2.utils.JWTTokenUtils;
 import com.sonnguyen.iamservice2.utils.JWTUtilsImpl;
