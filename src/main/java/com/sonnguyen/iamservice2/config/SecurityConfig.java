@@ -2,6 +2,7 @@ package com.sonnguyen.iamservice2.config;
 
 import com.sonnguyen.iamservice2.security.JwtFilter;
 import com.sonnguyen.iamservice2.security.LockAccountFilter;
+import com.sonnguyen.iamservice2.security.LoggingFilter;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -22,17 +23,18 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
     JwtFilter jwtFilter;
     LockAccountFilter lockAccountFilter;
-
+    LoggingFilter loggingFilter;
     @Bean
     public SecurityFilterChain configSecurityWithExternalIdp(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(request -> {
             request
-                    .requestMatchers("/api/v1/auth/**").permitAll()
+                    .requestMatchers("/api/v1/auth/**","/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**").permitAll()
                     .anyRequest().authenticated();
         });
         http.csrf(AbstractHttpConfigurer::disable);
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(lockAccountFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterAfter(lockAccountFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(loggingFilter,UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 }

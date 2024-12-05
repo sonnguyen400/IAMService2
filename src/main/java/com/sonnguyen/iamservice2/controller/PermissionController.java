@@ -5,6 +5,7 @@ import com.sonnguyen.iamservice2.service.PermissionService;
 import com.sonnguyen.iamservice2.service.RolePermissionService;
 import com.sonnguyen.iamservice2.viewmodel.PermissionGetVm;
 import com.sonnguyen.iamservice2.viewmodel.PermissionPostVm;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AccessLevel;
@@ -21,7 +22,7 @@ import java.util.List;
 @RequestMapping("/api/v1/permission")
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true,level= AccessLevel.PRIVATE)
-
+@SecurityRequirement(name = "bearer")
 public class PermissionController {
     PermissionService permissionService;
     RolePermissionService rolePermissionService;

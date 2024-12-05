@@ -4,7 +4,7 @@ import com.sonnguyen.iamservice2.service.RolePermissionService;
 import com.sonnguyen.iamservice2.service.RoleService;
 import com.sonnguyen.iamservice2.viewmodel.RoleGetVm;
 import com.sonnguyen.iamservice2.viewmodel.RolePostVm;
-import jakarta.validation.Valid;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +20,7 @@ import java.util.List;
 @RequestMapping("/api/v1/role")
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true,level= AccessLevel.PRIVATE)
+@SecurityRequirement(name = "bearer")
 public class RoleController {
     RoleService roleService;
     RolePermissionService rolePermissionService;
@@ -60,12 +61,5 @@ public class RoleController {
     @PreAuthorize("hasPermission('ROLE','DELETE')")
     public void deleteRoleById(@PathVariable Long id){
         roleService.deleteById(id);
-    }
-    @PostMapping("/{id}/updatePermissions")
-    @PreAuthorize("hasPermission('ROLE','UPDATE')")
-    public void updateRolePermission(
-            @PathVariable Long id,
-            @RequestBody List<Long> permissionIds){
-        rolePermissionService.updateRolePermission(id,permissionIds);
     }
 }

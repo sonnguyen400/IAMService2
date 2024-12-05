@@ -10,6 +10,7 @@ import com.sonnguyen.iamservice2.viewmodel.ChangePasswordPostVm;
 import com.sonnguyen.iamservice2.viewmodel.UserCreationPostVm;
 import com.sonnguyen.iamservice2.viewmodel.UserDetailGetVm;
 import com.sonnguyen.iamservice2.viewmodel.UserProfilePostVm;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true,level= AccessLevel.PRIVATE)
 @Slf4j
+@SecurityRequirement(name = "bearer")
 public class UserManagementController {
     AccountService accountService;
     AccountServiceImpl accountServiceImpl;

@@ -41,6 +41,7 @@ public class RoleService {
         Role role=rolePostVm.toEntity();
         role.setId(roleId);
         Role updatedRole=roleRepository.save(role);
+        rolePermissionService.updateRolePermission(role.getId(),rolePostVm.permissions());
         return RoleGetVm.fromEntity(updatedRole);
     }
     @Transactional
