@@ -39,15 +39,7 @@ public class LoggingFilter extends OncePerRequestFilter {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication != null ? authentication.getPrincipal().toString() : "Anonymous";
         log.info("ip {} agent {} path: {} user {}", ip, agent, path, username);
-        ObjectMapper mapper = new ObjectMapper();
-        if (request.getMethod().equals("POST") || request.getMethod().equals("PUT")) {
-            try (Reader reader = request.getReader()) {
-                String object = mapper.writeValueAsString(CharStreams.fromReader(request.getReader()));
-                log.info("Request body {}", object);
-            } catch (IOException e) {
-                log.error("Can't read request body", e);
-            }
-        }
+
     }
 
     private void logResponse(HttpServletResponse response) {
