@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 public class StatementInspectorConfig implements StatementInspector {
     @Override
     public String inspect(String sql) {
-        System.out.println(sql);
-        return sql;
+        return sql.replace("like ?", "ilike unaccent(?)");
     }
 }

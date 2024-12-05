@@ -22,34 +22,40 @@ import java.util.List;
 public class PermissionService {
     PermissionRepository permissionRepository;
     RolePermissionRepository rolePermissionRepository;
-    public Page<PermissionGetVm> findAll(Pageable pageable){
+
+    public Page<PermissionGetVm> findAll(Pageable pageable) {
         return permissionRepository.findAll(pageable).map(PermissionGetVm::fromEntity);
     }
-    public List<PermissionGetVm> createPermissions(List<PermissionPostVm> permissionPostVm){
-        List<Permission> permissions=permissionPostVm.stream().map(PermissionPostVm::toEntity).toList();
+
+    public List<PermissionGetVm> createPermissions(List<PermissionPostVm> permissionPostVm) {
+        List<Permission> permissions = permissionPostVm.stream().map(PermissionPostVm::toEntity).toList();
         return permissionRepository
                 .saveAll(permissions)
                 .stream().map(PermissionGetVm::fromEntity)
                 .toList();
     }
-    public List<PermissionGetVm> findAllByIdIn(List<Long> id){
+
+    public List<PermissionGetVm> findAllByIdIn(List<Long> id) {
         return permissionRepository.findAllByIdIn(id)
                 .stream().map(PermissionGetVm::fromEntity)
                 .toList();
     }
-    public PermissionGetVm updatePermissionById(Long permissionId,PermissionPostVm permissionPostVm){
-        Permission permission=permissionPostVm.toEntity();
+
+    public PermissionGetVm updatePermissionById(Long permissionId, PermissionPostVm permissionPostVm) {
+        Permission permission = permissionPostVm.toEntity();
         permission.setId(permissionId);
-        Permission updatedPermission=permissionRepository.save(permission);
+        Permission updatedPermission = permissionRepository.save(permission);
         return PermissionGetVm.fromEntity(updatedPermission);
     }
+
     @Transactional
-    public void deleteById(Long id){
+    public void deleteById(Long id) {
         permissionRepository.softDeleteById(id);
     }
-    public List<PermissionGetVm> findAllByRoleId(Long roleId){
-        List<RolePermission> rolePermissions=rolePermissionRepository.findAllByRoleId(roleId);
-        List<Long> permissionIds=rolePermissions.stream().map(RolePermission::getPermission_id).toList();
+
+    public List<PermissionGetVm> findAllByRoleId(Long roleId) {
+        List<RolePermission> rolePermissions = rolePermissionRepository.findAllByRoleId(roleId);
+        List<Long> permissionIds = rolePermissions.stream().map(RolePermission::getPermission_id).toList();
         return findAllByIdIn(permissionIds);
     }
 }

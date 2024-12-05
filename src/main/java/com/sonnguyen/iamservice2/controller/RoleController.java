@@ -19,22 +19,24 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/role")
 @RequiredArgsConstructor
-@FieldDefaults(makeFinal = true,level= AccessLevel.PRIVATE)
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @SecurityRequirement(name = "bearer")
 public class RoleController {
     RoleService roleService;
     RolePermissionService rolePermissionService;
+
     @GetMapping
     @PreAuthorize("hasPermission('ROLE','READ')")
     public Page<RoleGetVm> findAll(
-            @RequestParam(name = "page",defaultValue = "0",required = false) Integer page,
-            @RequestParam(name="size", defaultValue = "10",required = false) Integer size
-    ){
-        return roleService.findAll(PageRequest.of(page,size));
+            @RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
+            @RequestParam(name = "size", defaultValue = "10", required = false) Integer size
+    ) {
+        return roleService.findAll(PageRequest.of(page, size));
     }
+
     @GetMapping("/account/{account_id}")
     @PreAuthorize("hasPermission('ROLE','READ')")
-    public List<RoleGetVm> findAllByAccountId(@PathVariable Long account_id){
+    public List<RoleGetVm> findAllByAccountId(@PathVariable Long account_id) {
         return roleService.findAllByAccountId(account_id);
     }
 
@@ -42,24 +44,26 @@ public class RoleController {
     @PreAuthorize("hasPermission('ROLE','READ')")
     public List<RoleGetVm> findAllByIds(
             @RequestParam List<Long> id
-    ){
+    ) {
         return roleService.findAllByIdIn(id);
     }
+
     @PostMapping
     @PreAuthorize("hasPermission('ROLE','CREATE')")
-    public RoleGetVm createRoles(@RequestBody@NotEmpty RolePostVm roles){
+    public RoleGetVm createRoles(@RequestBody @NotEmpty RolePostVm roles) {
         return roleService.createRoles(roles);
     }
 
     @PostMapping(value = "/{id}/update")
     @PreAuthorize("hasPermission('ROLE','UPDATE')")
     public RoleGetVm updateRoleById(@PathVariable Long id,
-                                    @RequestBody RolePostVm rolePostVm){
-        return roleService.updateRoleById(id,rolePostVm);
+                                    @RequestBody RolePostVm rolePostVm) {
+        return roleService.updateRoleById(id, rolePostVm);
     }
+
     @PostMapping(value = "/{id}/delete")
     @PreAuthorize("hasPermission('ROLE','DELETE')")
-    public void deleteRoleById(@PathVariable Long id){
+    public void deleteRoleById(@PathVariable Long id) {
         roleService.deleteById(id);
     }
 }

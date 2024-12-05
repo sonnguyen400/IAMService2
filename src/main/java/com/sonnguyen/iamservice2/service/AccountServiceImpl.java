@@ -5,6 +5,7 @@ import com.sonnguyen.iamservice2.exception.ResourceNotFoundException;
 import com.sonnguyen.iamservice2.model.Account;
 import com.sonnguyen.iamservice2.repository.AccountRepository;
 import com.sonnguyen.iamservice2.specification.AccountSpecification;
+import com.sonnguyen.iamservice2.specification.DynamicSearch;
 import com.sonnguyen.iamservice2.viewmodel.*;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
@@ -27,20 +28,24 @@ import java.util.Optional;
 public class AccountServiceImpl implements AccountService {
     AccountRepository accountRepository;
     PasswordEncoder passwordEncoder;
+
     public Account findById(Long id) {
         return accountRepository.findById(id)
-                .orElseThrow(()-> new ResourceNotFoundException("Account not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Account not found"));
     }
-    public UserDetailGetVm findAccountDetailById(Long id){
+
+    public UserDetailGetVm findAccountDetailById(Long id) {
         return accountRepository.findById(id)
                 .map(UserDetailGetVm::fromEntity)
-                .orElseThrow(()->new ResourceNotFoundException("Account not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Account not found"));
     }
+
     public Optional<Account> findByEmail(String username) {
         return accountRepository.findByEmail(username);
     }
+
     @Override
-    public void register(UserRegistrationPostVm userRegistrationPostVm){
+    public void register(UserRegistrationPostVm userRegistrationPostVm) {
         Account account = userRegistrationPostVm.toEntity();
         account.setVerified(false);
         saveAccount(account);
@@ -49,32 +54,36 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public void updateLockedStatusByEmail(Boolean isLocked, String email) {
-        accountRepository.updateAccountLockStatusByEmail(isLocked,email);
+        accountRepository.updateAccountLockStatusByEmail(isLocked, email);
     }
+
     @Override
     public void create(UserCreationPostVm userCreationPostVm) {
         Account account = userCreationPostVm.toEntity();
         saveAccount(account);
     }
+
     @Transactional
     public void verifyAccountByEmail(String email) {
         accountRepository.verifiedAccountByEmail(email);
     }
-    public Account saveAccount(Account account){
-        if(accountRepository.existsAccountByEmail(account.getEmail())){
+
+    public Account saveAccount(Account account) {
+        if (accountRepository.existsAccountByEmail(account.getEmail())) {
             throw new DuplicatedException("Email was registered");
         }
         account.setPassword(passwordEncoder.encode(account.getPassword()));
         return accountRepository.save(account);
     }
+
     @Override
     @Transactional
-    public ResponseEntity<?> deleteByEmail(String email){
-        if(existedByEmail(email)){
+    public ResponseEntity<?> deleteByEmail(String email) {
+        if (existedByEmail(email)) {
             accountRepository.softDeleteByEmail(email);
         }
         return ResponseEntity.status(Response.Status.NOT_FOUND.getStatusCode())
-                .body("User registered with email"+email+"not found");
+                .body("User registered with email" + email + "not found");
     }
 
     @Override
@@ -84,36 +93,41 @@ public class AccountServiceImpl implements AccountService {
         return ResponseEntity.ok().build();
     }
 
-    public boolean existedByEmail(String email){
+    public boolean existedByEmail(String email) {
         return accountRepository.existsAccountByEmail(email);
     }
-    public Page<UserDetailGetVm> findAll(Pageable pageable){
+
+    public Page<UserDetailGetVm> findAll(Pageable pageable) {
         return accountRepository.findAll(pageable).map(UserDetailGetVm::fromEntity);
     }
-    public Page<UserDetailGetVm> findAll(List<AccountSpecification> specifications, Pageable pageable){
-        if(!specifications.isEmpty()){
-            Specification<Account> predicates= specifications.getFirst();
-            for(int i=1;i<specifications.size();i++){
-                predicates=predicates.and(specifications.get(i));
+
+    public Page<UserDetailGetVm> findAll(List<AccountSpecification> specifications, Pageable pageable) {
+        //Combine Specifications
+        if (!specifications.isEmpty()) {
+            Specification<Account> predicates = new AccountSpecification(new DynamicSearch("deleted", "true", DynamicSearch.Operator.EQUAL));
+            for (AccountSpecification specification : specifications) {
+                predicates = predicates.and(specification);
             }
-            return accountRepository.findAll(predicates,pageable).map(UserDetailGetVm::fromEntity);
+            return accountRepository.findAll(predicates, pageable).map(UserDetailGetVm::fromEntity);
         }
         return accountRepository.findAll(pageable).map(UserDetailGetVm::fromEntity);
     }
+
     @Override
     @Transactional
-    public void resetPasswordByAccountId(Long accountId, String rawPassword){
-        String password=passwordEncoder.encode(rawPassword);
-        accountRepository.resetPasswordByAccountId(accountId,password);
+    public void resetPasswordByAccountId(Long accountId, String rawPassword) {
+        String password = passwordEncoder.encode(rawPassword);
+        accountRepository.resetPasswordByAccountId(accountId, password);
     }
 
 
-    public void updateAccountProfileById(Long accountId, UserProfilePostVm userProfilePostVm){
-        Account oldAccount=findById(accountId);
-        Account newAccount=mapNewAccountProfile(oldAccount,userProfilePostVm);
+    public void updateAccountProfileById(Long accountId, UserProfilePostVm userProfilePostVm) {
+        Account oldAccount = findById(accountId);
+        Account newAccount = mapNewAccountProfile(oldAccount, userProfilePostVm);
         accountRepository.save(newAccount);
     }
-    private Account mapNewAccountProfile(Account oldAccount,UserProfilePostVm userProfilePostVm){
+
+    private Account mapNewAccountProfile(Account oldAccount, UserProfilePostVm userProfilePostVm) {
         oldAccount.setFirstName(userProfilePostVm.firstname());
         oldAccount.setLastName(userProfilePostVm.lastname());
         oldAccount.setAddress(userProfilePostVm.address());
@@ -121,11 +135,12 @@ public class AccountServiceImpl implements AccountService {
         oldAccount.setDateOfBirth(userProfilePostVm.dateOfBirth());
         return oldAccount;
     }
+
     @Transactional
     @Override
-    public void updatePasswordByEmail(ChangePasswordPostVm changePasswordPostVm){
-        String encodedPassword=passwordEncoder.encode(changePasswordPostVm.newPassword());
-        accountRepository.updatePasswordByEmail(changePasswordPostVm.email(),encodedPassword);
+    public void updatePasswordByEmail(ChangePasswordPostVm changePasswordPostVm) {
+        String encodedPassword = passwordEncoder.encode(changePasswordPostVm.newPassword());
+        accountRepository.updatePasswordByEmail(changePasswordPostVm.email(), encodedPassword);
     }
 
 }

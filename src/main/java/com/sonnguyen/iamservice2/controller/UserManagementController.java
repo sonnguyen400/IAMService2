@@ -30,7 +30,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
-@FieldDefaults(makeFinal = true,level= AccessLevel.PRIVATE)
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Slf4j
 @SecurityRequirement(name = "bearer")
 public class UserManagementController {
@@ -40,67 +40,76 @@ public class UserManagementController {
 
     @PostMapping
     @PreAuthorize("hasPermission('USER','CREATE')")
-    public void createNewUser(@RequestBody UserCreationPostVm userCreationPostVm){
+    public void createNewUser(@RequestBody UserCreationPostVm userCreationPostVm) {
         accountService.create(userCreationPostVm);
     }
+
     @PostMapping(value = "/lock")
     @PreAuthorize("hasPermission('USER','UPDATE')")
-    public void updateAccountLockStatus(@RequestParam Boolean lock,@RequestParam String email){
-        accountService.updateLockedStatusByEmail(lock,email);
+    public void updateAccountLockStatus(@RequestParam Boolean lock, @RequestParam String email) {
+        accountService.updateLockedStatusByEmail(lock, email);
     }
+
     @PostMapping(value = "/delete")
     @PreAuthorize("hasPermission('USER','DELETE')")
-    public ResponseEntity<?> deleteUserByEmail(@RequestParam String email){
+    public ResponseEntity<?> deleteUserByEmail(@RequestParam String email) {
         return accountService.deleteByEmail(email);
     }
+
     @GetMapping(value = "/{account_id}")
     @PreAuthorize("hasPermission('USER','READ')")
-    public UserDetailGetVm getUserById(@PathVariable(name = "account_id") Long id){
+    public UserDetailGetVm getUserById(@PathVariable(name = "account_id") Long id) {
         return accountServiceImpl.findAccountDetailById(id);
     }
+
     @GetMapping
     @PreAuthorize("hasPermission('USER','READ')")
     public Page<UserDetailGetVm> findAll(
-            @RequestParam(name = "page",required = false,defaultValue = "0") Integer page,
-            @RequestParam(name = "size",required = false,defaultValue = "10") Integer size,
+            @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+            @RequestParam(name = "size", required = false, defaultValue = "10") Integer size,
             HttpServletRequest request
-    ){
-        Sort sort=Sort.by(SearchUtils.parseSort(request.getParameterMap()));
-        List<AccountSpecification> accountSpecification=parseRequestToSpecification(request);
-        return accountServiceImpl.findAll(accountSpecification,PageRequest.of(page,size).withSort(sort));
+    ) {
+        Sort sort = Sort.by(SearchUtils.parseSort(request.getParameterMap()));
+        List<AccountSpecification> accountSpecification = parseRequestToSpecification(request);
+        return accountServiceImpl.findAll(accountSpecification, PageRequest.of(page, size).withSort(sort));
     }
+
     @PostMapping(value = "/{account_id}/delete")
     @PreAuthorize("hasPermission('USER','DELETE')")
-    public ResponseEntity<?> deleteById(@PathVariable(name="account_id") Long id){
+    public ResponseEntity<?> deleteById(@PathVariable(name = "account_id") Long id) {
         return accountServiceImpl.deleteById(id);
     }
+
     @PostMapping("/{account_id}/updateRole")
     @PreAuthorize("hasPermission('USER','UPDATE')")
-    public void updateRole(@PathVariable(name="account_id") Long id, @RequestBody List<Long> roleIds){
-        accountRoleService.updateAccountRoles(id,roleIds);
+    public void updateRole(@PathVariable(name = "account_id") Long id, @RequestBody List<Long> roleIds) {
+        accountRoleService.updateAccountRoles(id, roleIds);
     }
+
     @PostMapping("/{account_id}/resetpassword")
     @PreAuthorize("hasPermission('USER','UPDATE')")
     public void resetPassword(@PathVariable(name = "account_id") Long id,
-                              @RequestParam String password){
-        accountService.resetPasswordByAccountId(id,password);
+                              @RequestParam String password) {
+        accountService.resetPasswordByAccountId(id, password);
     }
+
     @PostMapping("/{id}/updateprofile")
     @PreAuthorize("hasPermission('USER','UPDATE')")
     public void updateAccountProfile(@PathVariable Long id,
-                                     @RequestBody UserProfilePostVm userProfilePostVm){
-        accountServiceImpl.updateAccountProfileById(id,userProfilePostVm);
+                                     @RequestBody UserProfilePostVm userProfilePostVm) {
+        accountServiceImpl.updateAccountProfileById(id, userProfilePostVm);
     }
 
     @PostMapping("/password/change")
     @PreAuthorize("hasPermission('USER','DELETE')")
-    public void changePassword(@RequestBody ChangePasswordPostVm changePasswordPostVm){
+    public void changePassword(@RequestBody ChangePasswordPostVm changePasswordPostVm) {
         accountServiceImpl.updatePasswordByEmail(changePasswordPostVm);
     }
-    private List<AccountSpecification> parseRequestToSpecification(HttpServletRequest request){
-        List<AccountSpecification> accountSpecifications=new ArrayList<>();
-        Map<String,String[]> parameterMap=request.getParameterMap();
-        List<DynamicSearch> list= SearchUtils.parseOperator(parameterMap);
+
+    private List<AccountSpecification> parseRequestToSpecification(HttpServletRequest request) {
+        List<AccountSpecification> accountSpecifications = new ArrayList<>();
+        Map<String, String[]> parameterMap = request.getParameterMap();
+        List<DynamicSearch> list = SearchUtils.parseOperator(parameterMap);
         list.forEach(dynamicSearch -> accountSpecifications.add(new AccountSpecification(dynamicSearch)));
         return accountSpecifications;
     }

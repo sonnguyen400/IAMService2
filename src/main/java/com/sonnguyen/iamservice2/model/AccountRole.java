@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AccountRole extends AbstractAuditEntity{
+public class AccountRole extends AbstractAuditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -17,6 +17,7 @@ public class AccountRole extends AbstractAuditEntity{
     private Long account_id;
     @Column(columnDefinition = "boolean default false")
     private boolean deleted;
+
     public AccountRole(Long role_id, Long account_id) {
         this.role_id = role_id;
         this.account_id = account_id;

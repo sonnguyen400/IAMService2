@@ -3,6 +3,7 @@ package com.sonnguyen.iamservice2.security;
 import com.sonnguyen.iamservice2.exception.TokenException;
 import com.sonnguyen.iamservice2.service.AuthenticationServiceImpl;
 import com.sonnguyen.iamservice2.service.ForbiddenTokenService;
+import com.sonnguyen.iamservice2.utils.JWTTokenUtils;
 import com.sonnguyen.iamservice2.utils.JWTUtilsImpl;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -29,23 +30,23 @@ import java.util.Collection;
 public class JwtFilterImpl extends OncePerRequestFilter implements JwtFilter {
     JWTUtilsImpl jwtUtils;
     ForbiddenTokenService forbiddenTokenService;
+    private final JWTTokenUtils jWTTokenUtils;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         Claims claims = validateToken(request);
         if (claims != null && !claims.getSubject().isEmpty()) {
-            Collection<? extends GrantedAuthority> authorities = AuthenticationServiceImpl.extractAuthoritiesFromString(claims.get("scope", String.class));
+            Collection<? extends GrantedAuthority> authorities = JWTTokenUtils.extractAuthoritiesFromString(claims.get("scope", String.class));
             logger.info("User authorities: " + authorities);
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(claims.getSubject(), null, authorities);
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         }
         filterChain.doFilter(request, response);
     }
-
     private Claims validateToken(HttpServletRequest request) {
         try {
             String token = extractBearerTokenFromRequestHeader(request);
-            if(forbiddenTokenService.findToken(token) != null) throw new TokenException("Invalid token");
+            if (forbiddenTokenService.findToken(token) != null) throw new TokenException("Invalid token");
             return jwtUtils.validateToken(token);
         } catch (Exception e) {
             return null;

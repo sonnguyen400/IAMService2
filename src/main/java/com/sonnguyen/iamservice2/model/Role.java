@@ -15,7 +15,7 @@ import org.hibernate.annotations.ColumnDefault;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Role extends AbstractAuditEntity{
+public class Role extends AbstractAuditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;

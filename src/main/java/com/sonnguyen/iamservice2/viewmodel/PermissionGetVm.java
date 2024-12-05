@@ -11,7 +11,7 @@ public record PermissionGetVm(
         @NotBlank String resource_code,
         @NotNull Scope scope
 ) {
-    public static PermissionGetVm fromEntity(Permission permission){
+    public static PermissionGetVm fromEntity(Permission permission) {
         return new PermissionGetVm(
                 permission.getId(),
                 permission.getResource_name(),

@@ -8,15 +8,15 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class DynamicSearch {
-    private   String key;
+    private String key;
     private Object value;
     private Operator operation;
-    public enum Operator{
+
+    public enum Operator {
         LT,
         GT,
         LTE,
         GTE,
-        LIKE,
         EQUAL,
         BEFORE,
         AFTER,

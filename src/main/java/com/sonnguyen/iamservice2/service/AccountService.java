@@ -7,10 +7,16 @@ import org.springframework.http.ResponseEntity;
 
 public interface AccountService {
     void register(UserRegistrationPostVm userRegistrationPostVm);
+
     void create(UserCreationPostVm userRegistrationPostVm);
-    void updateLockedStatusByEmail(Boolean isLocked,String email);
+
+    void updateLockedStatusByEmail(Boolean isLocked, String email);
+
     ResponseEntity<?> deleteByEmail(String email);
+
     ResponseEntity<?> deleteById(Object id);
-    void resetPasswordByAccountId(Long accountId,String rawPassword);
+
+    void resetPasswordByAccountId(Long accountId, String rawPassword);
+
     void updatePasswordByEmail(ChangePasswordPostVm changePasswordPostVm);
 }

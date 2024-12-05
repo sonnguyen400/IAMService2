@@ -28,7 +28,7 @@ public class Account extends AbstractAuditEntity {
     @ColumnDefault(value = "false")
     private boolean locked;
     @ColumnDefault(value = "true")
-    private boolean verified=true;
+    private boolean verified = true;
     @ColumnDefault(value = "false")
     private boolean deleted;
 }

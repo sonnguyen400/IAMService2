@@ -8,7 +8,10 @@ import org.springframework.http.ResponseEntity;
 
 public interface AuthenticationService {
     ResponseEntity<?> login(LoginPostVm loginPostVm);
+
     ResponseTokenVm refreshToken(String refreshToken);
+
     void logout(RequestTokenVm requestTokenVm);
+
     ResponseEntity<?> changePassword(ChangePasswordPostVm changePasswordPostVm);
 }

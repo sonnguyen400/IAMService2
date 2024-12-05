@@ -7,7 +7,7 @@ public record RoleGetVm(
         String name,
         String description
 ) {
-    public static RoleGetVm fromEntity(Role role){
+    public static RoleGetVm fromEntity(Role role) {
         return new RoleGetVm(
                 role.getId(),
                 role.getName(),

@@ -10,8 +10,8 @@ public record RolePostVm(
         @NotBlank String name,
         @NotBlank String description,
         @NotEmpty List<Long> permissions
-        ) {
-    public Role toEntity(){
+) {
+    public Role toEntity() {
         return Role.builder()
                 .name(name)
                 .description(description)

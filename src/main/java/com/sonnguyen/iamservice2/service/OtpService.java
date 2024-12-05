@@ -18,22 +18,27 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class OtpService {
     static final Random RANDOM = new SecureRandom();
-    RedisTemplate<String,Object> redisTemplate;
+    RedisTemplate<String, Object> redisTemplate;
     PasswordEncoder passwordEncoder;
-    public static String generateOtpCode(){
+
+    public static String generateOtpCode() {
         return String.valueOf(RANDOM.nextInt(100000, 999999));
     }
-    public void save(Otp otp){
+
+    public void save(Otp otp) {
         String encodedOtp = passwordEncoder.encode(otp.getOtp());
-        redisTemplate.opsForValue().set(otp.getEmail(),encodedOtp, Duration.ofSeconds(otp.getTimeToLiveSeconds()));
+        redisTemplate.opsForValue().set(otp.getEmail(), encodedOtp, Duration.ofSeconds(otp.getTimeToLiveSeconds()));
     }
+
     public String findByEmail(String email) {
         return (String) redisTemplate.opsForValue().get(email);
     }
-    public void validateOtp(String email,String otp) {
-        String encodedOtp =findByEmail(email);
-        if( !passwordEncoder.matches(otp, encodedOtp)){
+
+    public void validateOtp(String email, String otp) {
+        String encodedOtp = findByEmail(email);
+        if (!passwordEncoder.matches(otp, encodedOtp)) {
             throw new OtpException("Invalid OTP");
-        };
+        }
+        ;
     }
 }

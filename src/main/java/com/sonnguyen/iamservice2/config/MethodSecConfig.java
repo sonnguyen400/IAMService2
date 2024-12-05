@@ -14,7 +14,7 @@ public class MethodSecConfig {
     @Bean
     static MethodSecurityExpressionHandler expressionHandler(
             PermissionEvaluatorConfig customPermissionEvaluator) {
-        
+
         // create a new DefaultMethodSecurityExpressionHandler 
         // that will utilize CustomPermissionEvaluator
         DefaultMethodSecurityExpressionHandler handler =

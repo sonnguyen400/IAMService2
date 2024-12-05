@@ -12,7 +12,7 @@ public record UserProfilePostVm(
         @NotBlank String phone,
         @NotBlank Date dateOfBirth
 ) {
-    public Account toEntity(){
+    public Account toEntity() {
         return Account
                 .builder()
                 .lastName(lastname)

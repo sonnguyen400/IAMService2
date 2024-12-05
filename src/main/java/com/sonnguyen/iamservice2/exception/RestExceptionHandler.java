@@ -30,6 +30,7 @@ public class RestExceptionHandler {
                 .message(e.getConstraintViolations().stream().map((ConstraintViolation::getMessage)).collect(Collectors.joining("\n")))
                 .build();
     }
+
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseMessage handleIllegalArgument(IllegalArgumentException e) {
@@ -38,6 +39,7 @@ public class RestExceptionHandler {
                 .message(e.getMessage())
                 .build();
     }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseMessage handleMethodArgumentException(MethodArgumentNotValidException e) {
@@ -46,6 +48,7 @@ public class RestExceptionHandler {
                 .message(Arrays.stream(e.getDetailMessageArguments()))
                 .build();
     }
+
     @ExceptionHandler(DuplicatedException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseMessage handleDuplicatedException(DuplicatedException e) {
@@ -106,6 +109,7 @@ public class RestExceptionHandler {
                 .message(e.getMessage())
                 .build();
     }
+
     @ExceptionHandler(MethodValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseMessage methodValidationException(MethodValidationException e) {
@@ -115,6 +119,7 @@ public class RestExceptionHandler {
                 .message(e.getMessage())
                 .build();
     }
+
     @ExceptionHandler(AuthorizationDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ResponseMessage handleAuthorizationException(AuthorizationDeniedException e) {

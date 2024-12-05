@@ -17,44 +17,57 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthenticationController {
     AuthenticationService authenticationService;
-    AccountService accountService;
     AuthenticationServiceImpl authenticationServiceImpl;
-    AccountServiceImpl accountServiceImpl;
+    AccountService accountService;
+
+
+    @GetMapping(value = "/login/google")
+    public ResponseEntity<?> oauth2Login(){
+        return authenticationServiceImpl.oauth2Login();
+    }
     @PostMapping(value = "/login")
     public ResponseEntity<?> login(@RequestBody LoginPostVm loginPostVm) {
         return authenticationService.login(loginPostVm);
     }
+
     @GetMapping(value = "/login")
     public ResponseEntity<?> oauth2LoginToken(@RequestBody(required = false) LoginPostVm loginPostVm) {
         return authenticationService.login(loginPostVm);
     }
+
     @PostMapping(value = "/login/accept")
     public ResponseTokenVm oauth2LoginToken(@RequestBody(required = false) AcceptedLoginRequestVm acceptedLoginRequestVm) {
         return authenticationServiceImpl.acceptLoginRequest(acceptedLoginRequestVm);
     }
+
     @PostMapping(value = "/register")
-    public String register(@RequestBody UserRegistrationPostVm registrationPostVm){
+    public String register(@RequestBody UserRegistrationPostVm registrationPostVm) {
         accountService.register(registrationPostVm);
         return "registered successfully";
     }
+
     @GetMapping(value = "/verify")
-    public ResponseEntity<?> requestVerifyAccount(@RequestParam String email){
+    public ResponseEntity<?> requestVerifyAccount(@RequestParam String email) {
         return authenticationServiceImpl.requestVerifyAccount(email);
     }
+
     @GetMapping(value = "/verify/{code}")
-    public ResponseEntity<?> requestVerifyCode(@PathVariable String code){
+    public ResponseEntity<?> requestVerifyCode(@PathVariable String code) {
         return authenticationServiceImpl.acceptVerifyAccount(code);
     }
+
     @PostMapping(value = "/logout")
-    public void logout(@RequestBody RequestTokenVm requestTokenVm){
+    public void logout(@RequestBody RequestTokenVm requestTokenVm) {
         authenticationService.logout(requestTokenVm);
     }
+
     @PostMapping(value = "/token/refresh")
-    public ResponseTokenVm refreshToken(@RequestParam String refresh_token){
+    public ResponseTokenVm refreshToken(@RequestParam String refresh_token) {
         return authenticationService.refreshToken(refresh_token);
     }
+
     @PostMapping("/password/change")
-    public void changePassword(@RequestBody ChangePasswordPostVm changePasswordPostVm){
+    public void changePassword(@RequestBody ChangePasswordPostVm changePasswordPostVm) {
         authenticationServiceImpl.changePassword(changePasswordPostVm);
     }
 

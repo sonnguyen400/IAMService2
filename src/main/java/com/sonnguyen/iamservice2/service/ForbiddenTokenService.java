@@ -15,16 +15,18 @@ import java.time.Instant;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
 public class ForbiddenTokenService {
-    RedisTemplate<String,Object> redisTemplate;
+    RedisTemplate<String, Object> redisTemplate;
     JWTUtilsImpl jwtUtils;
+
     public void saveToken(String token) {
         try {
-            Claims claims=jwtUtils.validateToken(token);
-            redisTemplate.opsForValue().set(token,token, Duration.between(Instant.now(),claims.getExpiration().toInstant()));
+            Claims claims = jwtUtils.validateToken(token);
+            redisTemplate.opsForValue().set(token, token, Duration.between(Instant.now(), claims.getExpiration().toInstant()));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
+
     public String findToken(String token) {
         return (String) redisTemplate.opsForValue().get(token);
     }

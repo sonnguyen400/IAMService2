@@ -22,20 +22,21 @@ import java.util.List;
 public class UserDetailsService {
     AccountServiceImpl accountService;
     RolePermissionService rolePermissionService;
-    public UserDetails loadUserByUsername(@NotNull String username) throws UsernameNotFoundException {
+
+    public UserDetails loadUserByUsername(@NotNull String username) {
         return accountService
                 .findByEmail(username)
-                .map(account_->{
-                    UserDetails userDetails=fromAccount(account_);
-                    List<RolePermission> rolePermissions=rolePermissionService.findAllByAccountId(account_.getId());
-                    Collection<? extends GrantedAuthority> authorities = rolePermissions.stream().map((rolePermission ->{
-                        String authority=String.format("%s_%s",rolePermission.getResource_code().toUpperCase(),rolePermission.getScope().name());
+                .map(account_ -> {
+                    UserDetails userDetails = fromAccount(account_);
+                    List<RolePermission> rolePermissions = rolePermissionService.findAllByAccountId(account_.getId());
+                    Collection<? extends GrantedAuthority> authorities = rolePermissions.stream().map((rolePermission -> {
+                        String authority = String.format("%s_%s", rolePermission.getResource_code().toUpperCase(), rolePermission.getScope().name());
                         return new SimpleGrantedAuthority(authority);
                     })).toList();
                     userDetails.setAuthorities(authorities);
                     return userDetails;
                 })
-                .orElseThrow(() -> new ResourceNotFoundException(username+" not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(username + " not found"));
     }
 
     public static UserDetails fromAccount(Account account) {

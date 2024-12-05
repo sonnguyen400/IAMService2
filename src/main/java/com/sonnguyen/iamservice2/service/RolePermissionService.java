@@ -20,23 +20,27 @@ public class RolePermissionService {
     AccountRoleRepository accountRoleRepository;
     RolePermissionRepository rolePermissionRepository;
     PermissionService permissionService;
-    public List<RolePermission> findAllByRoleId(Long roleId){
+
+    public List<RolePermission> findAllByRoleId(Long roleId) {
         return rolePermissionRepository.findAllByRoleId(roleId);
     }
-    List<RolePermission> findAllByRoleIdIn(List<Long> roleIds){
+
+    List<RolePermission> findAllByRoleIdIn(List<Long> roleIds) {
         return rolePermissionRepository.findAllByRoleIdIn(roleIds);
     }
+
     @Transactional
-    public void updateRolePermission(Long roleId,List<Long> permissionIds){
+    public void updateRolePermission(Long roleId, List<Long> permissionIds) {
         rolePermissionRepository.softDeleteByRoleId(roleId);
-        List<PermissionGetVm> permissions=permissionService.findAllByIdIn(permissionIds);
-        List<RolePermission> rolePermissions=permissions
+        List<PermissionGetVm> permissions = permissionService.findAllByIdIn(permissionIds);
+        List<RolePermission> rolePermissions = permissions
                 .stream()
-                .map(permission_->createByRoleIdAndPermission(roleId,permission_))
+                .map(permission_ -> createByRoleIdAndPermission(roleId, permission_))
                 .toList();
         rolePermissionRepository.saveAll(rolePermissions);
     }
-    public RolePermission createByRoleIdAndPermission(Long roleId,PermissionGetVm permission){
+
+    public RolePermission createByRoleIdAndPermission(Long roleId, PermissionGetVm permission) {
 
         return RolePermission.builder()
                 .role_id(roleId)
@@ -45,9 +49,10 @@ public class RolePermissionService {
                 .resource_code(permission.resource_code())
                 .build();
     }
-    public List<RolePermission> findAllByAccountId(Long accountId){
-        List<AccountRole> accountRoles=accountRoleRepository.findAllByAccountId(accountId);
-        List<Long> roleIds=accountRoles.stream().map(AccountRole::getRole_id).toList();
+
+    public List<RolePermission> findAllByAccountId(Long accountId) {
+        List<AccountRole> accountRoles = accountRoleRepository.findAllByAccountId(accountId);
+        List<Long> roleIds = accountRoles.stream().map(AccountRole::getRole_id).toList();
         return rolePermissionRepository.findAllByRoleIdIn(roleIds);
     }
 }

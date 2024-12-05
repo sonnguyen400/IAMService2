@@ -34,39 +34,42 @@ public class LoggingFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
         logResponse(response);
     }
-    private void logRequest(HttpServletRequest request)  {
-        String ip=request.getRemoteAddr();
-        String agent=request.getHeader("User-Agent");
-        String path=request.getServletPath();
-        Authentication authentication=SecurityContextHolder.getContext().getAuthentication();
-        String username=authentication!=null?authentication.getPrincipal().toString():"Anonymous";
-        log.info("ip {} agent {} path: {} user {}",ip,agent,path,username);
+
+    private void logRequest(HttpServletRequest request) {
+        String ip = request.getRemoteAddr();
+        String agent = request.getHeader("User-Agent");
+        String path = request.getServletPath();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication != null ? authentication.getPrincipal().toString() : "Anonymous";
+        log.info("ip {} agent {} path: {} user {}", ip, agent, path, username);
         ObjectMapper mapper = new ObjectMapper();
-        if(request.getMethod().equals("POST")||request.getMethod().equals("PUT")){
-            try(Reader reader = request.getReader()){
-                String object=mapper.writeValueAsString(CharStreams.fromReader(request.getReader()));
-                log.info("Request body {}",object);
+        if (request.getMethod().equals("POST") || request.getMethod().equals("PUT")) {
+            try (Reader reader = request.getReader()) {
+                String object = mapper.writeValueAsString(CharStreams.fromReader(request.getReader()));
+                log.info("Request body {}", object);
             } catch (IOException e) {
-                log.error("Can't read request body",e);
+                log.error("Can't read request body", e);
             }
         }
     }
+
     private void logResponse(HttpServletResponse response) {
-        try(ServletOutputStream out=response.getOutputStream()) {
-            log.info("Response status: {}",response.getStatus());
-            ContentCachingResponseWrapper wrapper = WebUtils.getNativeResponse(response,
-                    ContentCachingResponseWrapper.class);
-            if (wrapper != null) {
-                byte[] buf = wrapper.getContentAsByteArray();
-                if (buf.length > 0) {
-                    String payload = new String(buf, 0, buf.length, wrapper.getCharacterEncoding());
-                    logger.debug("Response body :" + payload);
-                    wrapper.copyBodyToResponse();
-                }
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        log.info("Response status: {}", response.getStatus());
+//        try (ServletOutputStream out = response.getOutputStream()) {
+//
+//            ContentCachingResponseWrapper wrapper = WebUtils.getNativeResponse(response,
+//                    ContentCachingResponseWrapper.class);
+//            if (wrapper != null) {
+//                byte[] buf = wrapper.getContentAsByteArray();
+//                if (buf.length > 0) {
+//                    String payload = new String(buf, 0, buf.length, wrapper.getCharacterEncoding());
+//                    logger.debug("Response body :" + payload);
+//                    wrapper.copyBodyToResponse();
+//                }
+//            }
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
 
     }
 }

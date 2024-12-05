@@ -13,7 +13,7 @@ import org.hibernate.annotations.ColumnDefault;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RolePermission extends AbstractAuditEntity{
+public class RolePermission extends AbstractAuditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

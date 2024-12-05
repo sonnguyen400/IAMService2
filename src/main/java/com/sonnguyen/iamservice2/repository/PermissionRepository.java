@@ -13,12 +13,14 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface PermissionRepository extends JpaRepository<Permission,Long> {
+public interface PermissionRepository extends JpaRepository<Permission, Long> {
     @Query("select p from Permission p where p.id in :ids and p.deleted=false")
     List<Permission> findAllByIdIn(@Param("ids") List<Long> id);
+
     @Nonnull
     @Query("select p from Permission p where p.deleted=false")
     Page<Permission> findAll(@Nonnull Pageable pageable);
+
     @Modifying
     @Query("update Permission p set p.deleted=true where p.id=?1")
     void softDeleteById(Long id);

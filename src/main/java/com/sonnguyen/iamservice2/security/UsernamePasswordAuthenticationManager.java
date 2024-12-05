@@ -24,12 +24,18 @@ public class UsernamePasswordAuthenticationManager implements AuthenticationMana
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         UserDetails userDetails = userDetailsService.loadUserByUsername(authentication.getName());
-        if(!userDetails.isVerified()) throw new BadCredentialsException("User is not verified");
-        if(!userDetails.isNonLocked()) throw new LockedException("User is locked");
+        if (!userDetails.isVerified()) throw new BadCredentialsException("User is not verified");
+        if (!userDetails.isNonLocked()) throw new LockedException("User is locked");
         if (passwordEncoder.matches(authentication.getCredentials().toString(), userDetails.getPassword())) {
             Authentication auth = new UsernamePasswordAuthenticationToken(userDetails.getUsername(), null, userDetails.getAuthorities());
             return auth;
         }
         throw new BadCredentialsException("Bad credentials");
+    }
+    public Authentication oauth2Authenticate(String username) {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        if (!userDetails.isVerified()) throw new BadCredentialsException("User is not verified");
+        if (!userDetails.isNonLocked()) throw new LockedException("User is locked");
+        return new UsernamePasswordAuthenticationToken(userDetails.getUsername(), null, userDetails.getAuthorities());
     }
 }

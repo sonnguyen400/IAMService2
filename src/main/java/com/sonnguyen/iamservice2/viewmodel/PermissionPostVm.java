@@ -10,7 +10,7 @@ public record PermissionPostVm(
         @NotBlank String resource_code,
         @NotNull Scope scope
 ) {
-    public Permission toEntity(){
+    public Permission toEntity() {
         return Permission
                 .builder()
                 .resource_code(resource_code)

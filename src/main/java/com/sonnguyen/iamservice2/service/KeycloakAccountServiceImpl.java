@@ -39,19 +39,21 @@ public class KeycloakAccountServiceImpl implements AccountService {
     private AccountServiceImpl accountServiceImpl;
     @Autowired
     private AuthenticationManager authenticationManager;
+
     @Override
-    public void resetPasswordByAccountId(Long accountId,String rawPassword)  {
-        Account account=accountServiceImpl.findById(accountId);
-        UserRepresentation userRepresentation=findByEmail(account.getEmail());
-        CredentialRepresentation newCredential=new CredentialRepresentation();
+    public void resetPasswordByAccountId(Long accountId, String rawPassword) {
+        Account account = accountServiceImpl.findById(accountId);
+        UserRepresentation userRepresentation = findByEmail(account.getEmail());
+        CredentialRepresentation newCredential = new CredentialRepresentation();
         newCredential.setType(CredentialRepresentation.PASSWORD);
         newCredential.setValue(rawPassword);
         keycloak.realm(realm).users().get(userRepresentation.getId()).resetPassword(newCredential);
-        accountServiceImpl.resetPasswordByAccountId(accountId,rawPassword);
+        accountServiceImpl.resetPasswordByAccountId(accountId, rawPassword);
     }
+
     @Override
     public void register(UserRegistrationPostVm userRegistrationPostVm) {
-        Account account=userRegistrationPostVm.toEntity();
+        Account account = userRegistrationPostVm.toEntity();
         account.setLocked(false);
         account.setVerified(true);
         createKeycloakUser(account);
@@ -60,32 +62,33 @@ public class KeycloakAccountServiceImpl implements AccountService {
 
     @Override
     public void create(UserCreationPostVm userCreationPostVm) {
-        Account account=userCreationPostVm.toEntity();
-        UserRepresentation userRepresentation= createKeycloakUser(account);
+        Account account = userCreationPostVm.toEntity();
+        UserRepresentation userRepresentation = createKeycloakUser(account);
         accountServiceImpl.saveAccount(account);
     }
 
-    public UserRepresentation findByEmail(String email){
-        UsersResource usersResource=keycloak.realm(realm).users();
-        List<UserRepresentation> users=usersResource.searchByEmail(email,true);
-        if(users.size()!=1){
+    public UserRepresentation findByEmail(String email) {
+        UsersResource usersResource = keycloak.realm(realm).users();
+        List<UserRepresentation> users = usersResource.searchByEmail(email, true);
+        if (users.size() != 1) {
             throw new RuntimeException("Invalid email");
         }
         return users.getFirst();
     }
+
     @Override
     public void updateLockedStatusByEmail(Boolean isLocked, String email) {
-        UserRepresentation user=findByEmail(email);
+        UserRepresentation user = findByEmail(email);
         user.setEnabled(!isLocked);
-        UserResource userResource=keycloak.realm(realm).users().get(user.getId());
+        UserResource userResource = keycloak.realm(realm).users().get(user.getId());
         userResource.update(user);
     }
 
     @Override
     public ResponseEntity<?> deleteByEmail(String email) {
-        UserRepresentation user=findByEmail(email);
-        UsersResource usersResource=keycloak.realm(realm).users();
-        try(Response deletedResponse = usersResource.delete(user.getId())){
+        UserRepresentation user = findByEmail(email);
+        UsersResource usersResource = keycloak.realm(realm).users();
+        try (Response deletedResponse = usersResource.delete(user.getId())) {
             accountServiceImpl.deleteByEmail(email);
             return mapResponseToResponseEntity(deletedResponse);
         }
@@ -93,8 +96,8 @@ public class KeycloakAccountServiceImpl implements AccountService {
 
     @Override
     public ResponseEntity<?> deleteById(Object id) {
-        UsersResource user=keycloak.realm(realm).users();
-        try(Response response=user.delete((String)id)){
+        UsersResource user = keycloak.realm(realm).users();
+        try (Response response = user.delete((String) id)) {
             return mapResponseToResponseEntity(response);
         }
     }
@@ -105,11 +108,12 @@ public class KeycloakAccountServiceImpl implements AccountService {
             log.info(response.readEntity(String.class));
             if (response.getStatus() != Response.Status.CREATED.getStatusCode()) {
                 throw new KeycloakException("Keycloak user creation failed");
-            }else{
+            } else {
                 return findByEmail(userRepresentation.getEmail());
             }
         }
     }
+
     public UserRepresentation mapAccount(Account account) {
 
         //User's base profile
@@ -130,15 +134,17 @@ public class KeycloakAccountServiceImpl implements AccountService {
         userRepresentation.setCredentials(List.of(credentialRepresentation));
         return userRepresentation;
     }
-    public ResponseEntity<?> mapResponseToResponseEntity(Response response){
+
+    public ResponseEntity<?> mapResponseToResponseEntity(Response response) {
         return ResponseEntity
                 .status(response.getStatus())
                 .body(response.readEntity(String.class));
     }
-    public void updatePasswordByEmail(ChangePasswordPostVm changePasswordPostVm){
-        UsernamePasswordAuthenticationToken authenticationToken=new UsernamePasswordAuthenticationToken(changePasswordPostVm.email(),changePasswordPostVm.oldPassword());
+
+    public void updatePasswordByEmail(ChangePasswordPostVm changePasswordPostVm) {
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(changePasswordPostVm.email(), changePasswordPostVm.oldPassword());
         authenticationManager.authenticate(authenticationToken);
         accountServiceImpl.updatePasswordByEmail(changePasswordPostVm);
-        UserRepresentation userRepresentation=findByEmail(changePasswordPostVm.email());
+        UserRepresentation userRepresentation = findByEmail(changePasswordPostVm.email());
     }
 }

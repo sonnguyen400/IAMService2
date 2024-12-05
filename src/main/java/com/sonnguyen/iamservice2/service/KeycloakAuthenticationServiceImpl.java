@@ -43,18 +43,19 @@ public class KeycloakAuthenticationServiceImpl implements AuthenticationService 
     @Override
     public ResponseTokenVm refreshToken(String refreshToken) {
         return keycloakClientService.refreshToken(Map.of(
-                "refresh_token",refreshToken,
-                "client_id",clientId,
-                "client_secret",clientSecret,
-                "grant_type","refresh_token"
+                "refresh_token", refreshToken,
+                "client_id", clientId,
+                "client_secret", clientSecret,
+                "grant_type", "refresh_token"
         ));
     }
+
     public void logout(RequestTokenVm requestTokenVm) {
         logService.saveActivityLog(UserActivityLog.builder().activityType(ActivityType.LOGIN).build());
         keycloakClientService.logout(Map.of(
-                "client_id",clientId,
-                "client_secret",clientSecret,
-                "refresh_token",requestTokenVm.refresh_token()
+                "client_id", clientId,
+                "client_secret", clientSecret,
+                "refresh_token", requestTokenVm.refresh_token()
         ));
     }
 

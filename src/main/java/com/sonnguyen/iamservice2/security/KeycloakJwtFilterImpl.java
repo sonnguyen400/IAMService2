@@ -39,9 +39,9 @@ public class KeycloakJwtFilterImpl extends OncePerRequestFilter implements JwtFi
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         Jwt jwt = validateToken(request);
-        if(jwt!=null){
+        if (jwt != null) {
             String username = jwt.getClaimAsString("preferred_username");
-            try{
+            try {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 log.info("authorities {}", userDetails.getAuthorities());
                 Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, userDetails.getAuthorities());
@@ -54,10 +54,10 @@ public class KeycloakJwtFilterImpl extends OncePerRequestFilter implements JwtFi
     }
 
     public Jwt validateToken(HttpServletRequest request) {
-        try{
+        try {
             String token = extractBearerTokenFromRequestHeader(request);
             return jwtDecoder.decode(token);
-        }catch(Exception e){
+        } catch (Exception e) {
             return null;
         }
 

@@ -6,9 +6,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public abstract class AbstractResponseMessage {
-    private  int status;
-    private  Object message;
-    private  Object content;
+    private int status;
+    private Object message;
+    private Object content;
 
     public AbstractResponseMessage() {
     }
