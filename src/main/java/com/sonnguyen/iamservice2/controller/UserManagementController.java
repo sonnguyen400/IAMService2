@@ -12,6 +12,7 @@ import com.sonnguyen.iamservice2.viewmodel.UserDetailGetVm;
 import com.sonnguyen.iamservice2.viewmodel.UserProfilePostVm;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -72,6 +73,15 @@ public class UserManagementController {
         Sort sort = Sort.by(SearchUtils.parseSort(request.getParameterMap()));
         List<AccountSpecification> accountSpecification = parseRequestToSpecification(request);
         return accountServiceImpl.findAll(accountSpecification, PageRequest.of(page, size).withSort(sort));
+    }
+    @GetMapping("/export-to-excel")
+    @PreAuthorize("hasPermission('USER','READ')")
+    public void exportToExcel(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        List<AccountSpecification> accountSpecification = parseRequestToSpecification(request);
+         accountServiceImpl.exportAccountsToExcel(accountSpecification,response);
     }
 
     @PostMapping(value = "/{account_id}/delete")

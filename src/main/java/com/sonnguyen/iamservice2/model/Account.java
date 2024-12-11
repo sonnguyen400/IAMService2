@@ -25,10 +25,19 @@ public class Account extends AbstractAuditEntity {
     private String address;
     private String picture;
     private Date dateOfBirth;
+    private Integer yearOfExperience;
+    private String street;
+    private String commune;
+    private String province;
+    private String district;
     @ColumnDefault(value = "false")
     private boolean locked;
     @ColumnDefault(value = "true")
     private boolean verified = true;
     @ColumnDefault(value = "false")
     private boolean deleted;
+
+    public Integer getYearOfExperience() {
+        return 0;
+    }
 }

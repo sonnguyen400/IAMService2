@@ -29,7 +29,7 @@ import java.util.Collection;
 public class JwtFilterImpl extends OncePerRequestFilter implements JwtFilter {
     JWTUtilsImpl jwtUtils;
     ForbiddenTokenService forbiddenTokenService;
-    private final JWTTokenUtils jWTTokenUtils;
+    JWTTokenUtils jWTTokenUtils;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

@@ -7,11 +7,14 @@ import com.sonnguyen.iamservice2.repository.AccountRepository;
 import com.sonnguyen.iamservice2.specification.AccountSpecification;
 import com.sonnguyen.iamservice2.specification.DynamicSearch;
 import com.sonnguyen.iamservice2.viewmodel.*;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -19,6 +22,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Optional;
 
@@ -101,16 +109,13 @@ public class AccountServiceImpl implements AccountService {
         return accountRepository.findAll(pageable).map(UserDetailGetVm::fromEntity);
     }
 
+    public Page<Account> findAllAccounts(List<AccountSpecification> specifications, Pageable pageable){
+        Specification<Account> accountSpecification=combineSpecification(specifications);
+        return accountRepository.findAll(accountSpecification,pageable);
+    }
+
     public Page<UserDetailGetVm> findAll(List<AccountSpecification> specifications, Pageable pageable) {
-        //Combine Specifications
-        if (!specifications.isEmpty()) {
-            Specification<Account> predicates = new AccountSpecification(new DynamicSearch("deleted", "true", DynamicSearch.Operator.EQUAL));
-            for (AccountSpecification specification : specifications) {
-                predicates = predicates.and(specification);
-            }
-            return accountRepository.findAll(predicates, pageable).map(UserDetailGetVm::fromEntity);
-        }
-        return accountRepository.findAll(pageable).map(UserDetailGetVm::fromEntity);
+       return findAllAccounts(specifications,pageable).map(UserDetailGetVm::fromEntity);
     }
 
     @Override
@@ -143,4 +148,73 @@ public class AccountServiceImpl implements AccountService {
         accountRepository.updatePasswordByEmail(changePasswordPostVm.email(), encodedPassword);
     }
 
+    public void exportAccountsToExcel(List<AccountSpecification> specifications, HttpServletResponse response){
+        Specification<Account> accountSpecification=combineSpecification(specifications);
+        List<Account> accounts=accountRepository.findAll(accountSpecification);
+        try (Workbook workbook=parseAccountToWorkbook(accounts)){
+            workbook.write(response.getOutputStream());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static Workbook parseAccountToWorkbook(List<Account> accounts) throws IOException {
+        Workbook wb=null;
+        try(InputStream fileInputStream= Files.newInputStream(Paths.get("src/main/resources/accounts_sample.xlsx"))){
+            wb= WorkbookFactory.create(fileInputStream);
+        } catch (IOException e) {
+            wb=new XSSFWorkbook();
+        }
+        Sheet sheet=wb.getSheetAt(0);
+        CellStyle style=wb.createCellStyle();
+        Font font=wb.createFont();
+        font.setFontName("Times New Roman");
+        style.setFont(font);
+        for(int i=0;i<accounts.size();i++){
+            Row row=sheet.createRow(i+1);
+            row.setRowStyle(style);
+            setAccountValue(i+1,row,accounts.get(i),style);
+        }
+        return wb;
+    }
+    public static void setAccountValue(int index,Row row,Account account,CellStyle style){
+        Cell cell0=row.createCell(0);
+        cell0.setCellValue(index);
+        cell0.setCellStyle(style);
+        Cell cell1=row.createCell(1);
+        cell1.setCellStyle(style);
+        cell1.setCellValue(account.getEmail());
+        Cell cell2=row.createCell(2);
+        cell2.setCellStyle(style);
+        cell2.setCellValue(account.getFirstName());
+        Cell cell3=row.createCell(3);
+        cell3.setCellStyle(style);
+        cell3.setCellValue(account.getLastName());
+        Cell cell4=row.createCell(4);
+        cell4.setCellStyle(style);
+        cell4.setCellValue(new SimpleDateFormat("yyyy/MM/dd").format(account.getDateOfBirth()));
+        Cell cell5=row.createCell(5);
+        cell5.setCellStyle(style);
+        cell5.setCellValue(account.getStreet());
+        Cell cell6=row.createCell(6);
+        cell6.setCellStyle(style);
+        cell6.setCellValue(account.getCommune());
+        Cell cell7=row.createCell(7);
+        cell7.setCellStyle(style);
+        cell7.setCellValue(account.getDistrict());
+        Cell cell8=row.createCell(8);
+        cell8.setCellStyle(style);
+        cell8.setCellValue(account.getProvince());
+        Cell cell9=row.createCell(9);
+        cell9.setCellStyle(style);
+        cell9.setCellValue(account.getYearOfExperience());
+    }
+
+
+    public Specification<Account> combineSpecification(List<AccountSpecification> specifications){
+        Specification<Account> combined = new AccountSpecification(new DynamicSearch("deleted", "false", DynamicSearch.Operator.EQUAL));
+        for (AccountSpecification specification : specifications) {
+            combined = combined.and(specification);
+        }
+        return combined;
+    }
 }
