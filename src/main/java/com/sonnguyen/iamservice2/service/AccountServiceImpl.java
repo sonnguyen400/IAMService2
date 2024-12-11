@@ -2,6 +2,7 @@ package com.sonnguyen.iamservice2.service;
 
 import com.sonnguyen.iamservice2.exception.DuplicatedException;
 import com.sonnguyen.iamservice2.exception.ResourceNotFoundException;
+import com.sonnguyen.iamservice2.exception.WorkbookValidationException;
 import com.sonnguyen.iamservice2.model.Account;
 import com.sonnguyen.iamservice2.repository.AccountRepository;
 import com.sonnguyen.iamservice2.specification.AccountSpecification;
@@ -9,6 +10,10 @@ import com.sonnguyen.iamservice2.specification.DynamicSearch;
 import com.sonnguyen.iamservice2.viewmodel.*;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import jakarta.ws.rs.core.Response;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -21,14 +26,16 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
@@ -216,5 +223,72 @@ public class AccountServiceImpl implements AccountService {
             combined = combined.and(specification);
         }
         return combined;
+    }
+
+    public void importAccountsFromExcel(MultipartFile file) {
+        try(XSSFWorkbook workbook=new XSSFWorkbook(file.getInputStream())) {
+            List<Account> accounts=parseAndValidateAccountsFromExcel(workbook);
+            accountRepository.saveAll(accounts);
+        } catch (IOException | ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public  List<Account> parseAndValidateAccountsFromExcel(Workbook workbook) throws ParseException {
+        ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+        DateFormat dateFormat=new SimpleDateFormat("yyyy/MM/dd");
+        Validator validator = validatorFactory.getValidator();
+        Sheet sheet=workbook.getSheetAt(0);
+        Iterator<Row> rows=sheet.iterator();
+        List<Account> accounts=new ArrayList<>();
+        rows.next();
+        int rowIndex=1;
+        int colIndex=0;
+
+        try{
+            while (rows.hasNext()){
+                Row row=rows.next();
+                colIndex=1;
+                String email=row.getCell(1).getStringCellValue();colIndex++;
+                String firstName=row.getCell(2).getStringCellValue();colIndex++;
+                String lastName=row.getCell(3).getStringCellValue();colIndex++;
+                Date dateOfBirth=dateFormat.parse(row.getCell(4).getStringCellValue());colIndex++;
+                String street=row.getCell(5).getStringCellValue();colIndex++;
+                String commune=row.getCell(6).getStringCellValue();colIndex++;
+                String district=row.getCell(7).getStringCellValue();colIndex++;
+                String province=row.getCell(8).getStringCellValue();colIndex++;
+                double experience=row.getCell(9).getNumericCellValue();colIndex++;
+                Account account=Account.builder()
+                        .email(email)
+                        .firstName(firstName)
+                        .lastName(lastName)
+                        .dateOfBirth(dateOfBirth)
+                        .street(street)
+                        .commune(commune)
+                        .district(district)
+                        .province(province)
+                        .yearOfExperience((int) experience)
+                        .verified(true)
+                        .deleted(false)
+                        .password(passwordEncoder.encode(UUID.randomUUID().toString()))
+                        .build();
+                Set<ConstraintViolation<Account>> violations = validator.validate(account);
+                if (!violations.isEmpty()) {
+                    List<String> violationMessages=violations.stream().map(ConstraintViolation::getMessage).toList();
+                    throw WorkbookValidationException.create(rowIndex,colIndex,violationMessages);
+                }
+                if(existedByEmail(account.getEmail())){
+                    throw WorkbookValidationException.create(rowIndex,1,List.of("Duplicated email"));
+                }
+                accounts.add(account);
+                rowIndex++;
+            }
+        } catch (Exception e) {
+            if(e instanceof WorkbookValidationException){
+                throw e;
+            }
+            throw WorkbookValidationException.create(rowIndex,colIndex,List.of(e.getMessage()));
+        }
+        return accounts;
+
     }
 }

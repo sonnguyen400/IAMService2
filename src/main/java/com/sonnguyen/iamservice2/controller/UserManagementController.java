@@ -23,6 +23,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,6 +85,10 @@ public class UserManagementController {
          accountServiceImpl.exportAccountsToExcel(accountSpecification,response);
     }
 
+    @PostMapping("/import-from-excel")
+    public void importToExcel(@RequestPart MultipartFile file){
+        accountServiceImpl.importAccountsFromExcel(file);
+    }
     @PostMapping(value = "/{account_id}/delete")
     @PreAuthorize("hasPermission('USER','DELETE')")
     public ResponseEntity<?> deleteById(@PathVariable(name = "account_id") Long id) {
