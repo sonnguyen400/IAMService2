@@ -1,6 +1,7 @@
 package com.sonnguyen.iamservice2.service;
 
 import com.sonnguyen.iamservice2.config.OpenFeignTokenInterceptor;
+import com.sonnguyen.iamservice2.viewmodel.FileUploadedResponseVm;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,5 +24,5 @@ public interface PrivateStorageService {
     @PostMapping("/{id}/delete")
     ResponseEntity<?> deleteById(@PathVariable Long id);
     @PostMapping(value = "/upload",consumes=MediaType.MULTIPART_FORM_DATA_VALUE )
-    ResponseEntity<?> uploadAllFile(@RequestPart(name = "file") List<MultipartFile> files,@RequestPart String owner);
+    ResponseEntity<List<FileUploadedResponseVm>> uploadAllFile(@RequestPart(name = "file") List<MultipartFile> files, @RequestPart String owner);
 }

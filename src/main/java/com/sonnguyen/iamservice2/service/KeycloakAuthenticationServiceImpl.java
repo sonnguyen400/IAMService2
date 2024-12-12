@@ -4,8 +4,6 @@ import com.sonnguyen.iamservice2.constant.ActivityType;
 import com.sonnguyen.iamservice2.model.UserActivityLog;
 import com.sonnguyen.iamservice2.viewmodel.*;
 import jakarta.annotation.Nullable;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.ResponseEntity;

@@ -121,6 +121,11 @@ public class UserManagementController {
         accountServiceImpl.updatePasswordByEmail(changePasswordPostVm);
     }
 
+    @PostMapping("/update-picture")
+    @PreAuthorize("hasPermission('USER','UPDATE') or authentication.principal==#email")
+    public void updateProfilePicture(@RequestPart MultipartFile file,@RequestPart String email) {
+        accountServiceImpl.updateProfilePictureByEmail(file,email);
+    }
     private List<AccountSpecification> parseRequestToSpecification(HttpServletRequest request) {
         List<AccountSpecification> accountSpecifications = new ArrayList<>();
         Map<String, String[]> parameterMap = request.getParameterMap();

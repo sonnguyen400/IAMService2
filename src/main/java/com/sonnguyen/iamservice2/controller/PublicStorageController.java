@@ -1,12 +1,11 @@
 package com.sonnguyen.iamservice2.controller;
 
 import com.sonnguyen.iamservice2.service.PublicStorageService;
-import com.sonnguyen.iamservice2.viewmodel.ThumbnailParamsVm;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -40,7 +39,7 @@ public class PublicStorageController {
         return storageService.deleteById(id);
     }
     @PostMapping("/upload")
-    ResponseEntity<?> uploadAllFile(@RequestPart(name = "file") List<MultipartFile> files, String owner){
-        return storageService.uploadAllFile(files, owner);
+    ResponseEntity<?> uploadAllFile(@RequestPart(name = "file") List<MultipartFile> files, Authentication authentication){
+        return storageService.uploadAllFile(files,(String) authentication.getPrincipal());
     }
 }

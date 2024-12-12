@@ -11,7 +11,6 @@ import com.sonnguyen.iamservice2.viewmodel.*;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import jakarta.ws.rs.core.Response;
@@ -43,6 +42,7 @@ import java.util.*;
 public class AccountServiceImpl implements AccountService {
     AccountRepository accountRepository;
     PasswordEncoder passwordEncoder;
+    PublicStorageService publicStorageService;
     ValidatorFactory validatorFactory;
     public Account findById(Long id) {
         return accountRepository.findById(id)
@@ -288,6 +288,14 @@ public class AccountServiceImpl implements AccountService {
             throw WorkbookValidationException.create(rowIndex,colIndex,List.of(e.getMessage()));
         }
         return accounts;
+
+    }
+    @Transactional
+    public void updateProfilePictureByEmail(MultipartFile file,String email){
+        Account account=findByEmail(email).orElseThrow(()->new RuntimeException("Account not found"));
+        ResponseEntity<List<FileUploadedResponseVm>> uploadedResponse= (ResponseEntity<List<FileUploadedResponseVm>>) publicStorageService.uploadAllFile(List.of(file),email);
+        String link= Objects.requireNonNull(uploadedResponse.getBody()).getFirst().link();
+        accountRepository.updateAccountPictureByAccountID(account.getId(),link);
 
     }
 }

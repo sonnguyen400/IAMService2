@@ -1,15 +1,10 @@
 package com.sonnguyen.iamservice2.controller;
 
 import com.sonnguyen.iamservice2.service.PrivateStorageService;
-import com.sonnguyen.iamservice2.service.PublicStorageService;
-import com.sonnguyen.iamservice2.viewmodel.FileDataListGetVm;
-import com.sonnguyen.iamservice2.viewmodel.FileDetailsGetVm;
-import com.sonnguyen.iamservice2.viewmodel.ThumbnailParamsVm;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
