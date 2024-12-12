@@ -2,10 +2,7 @@ package com.sonnguyen.iamservice2.service;
 
 import com.sonnguyen.iamservice2.constant.ActivityType;
 import com.sonnguyen.iamservice2.model.UserActivityLog;
-import com.sonnguyen.iamservice2.viewmodel.ChangePasswordPostVm;
-import com.sonnguyen.iamservice2.viewmodel.LoginPostVm;
-import com.sonnguyen.iamservice2.viewmodel.RequestTokenVm;
-import com.sonnguyen.iamservice2.viewmodel.ResponseTokenVm;
+import com.sonnguyen.iamservice2.viewmodel.*;
 import jakarta.annotation.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,16 +20,10 @@ import java.util.Map;
         havingValue = "KEYCLOAK"
 )
 public class KeycloakAuthenticationServiceImpl implements AuthenticationService {
-    @Autowired
     KeycloakClientService keycloakClientService;
-    @Autowired
     AccountService keycloakAccountService;
-    @Autowired
     UserActivityLogService logService;
-    @Value("${keycloak.client-id}")
-    private String clientId;
-    @Value("${keycloak.client-secret}")
-    private String clientSecret;
+    KeycloakProperties keycloakProperties;
 
     @Override
     public ResponseEntity<?> login(@Nullable LoginPostVm loginPostVm) {
@@ -44,8 +35,8 @@ public class KeycloakAuthenticationServiceImpl implements AuthenticationService 
     public ResponseTokenVm refreshToken(String refreshToken) {
         return keycloakClientService.refreshToken(Map.of(
                 "refresh_token", refreshToken,
-                "client_id", clientId,
-                "client_secret", clientSecret,
+                "client_id", keycloakProperties.client_id(),
+                "client_secret", keycloakProperties.client_secret(),
                 "grant_type", "refresh_token"
         ));
     }
@@ -53,8 +44,8 @@ public class KeycloakAuthenticationServiceImpl implements AuthenticationService 
     public void logout(RequestTokenVm requestTokenVm) {
         logService.saveActivityLog(UserActivityLog.builder().activityType(ActivityType.LOGIN).build());
         keycloakClientService.logout(Map.of(
-                "client_id", clientId,
-                "client_secret", clientSecret,
+                "client_id", keycloakProperties.client_id(),
+                "client_secret", keycloakProperties.client_secret(),
                 "refresh_token", requestTokenVm.refresh_token()
         ));
     }
