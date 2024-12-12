@@ -1,10 +1,14 @@
 package com.sonnguyen.iamservice2.config;
 
+import com.sonnguyen.iamservice2.viewmodel.KeycloakProperties;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
@@ -13,29 +17,21 @@ import org.springframework.stereotype.Component;
         value = "default-idp",
         havingValue = "KEYCLOAK"
 )
+@EnableConfigurationProperties(KeycloakProperties.class)
+@FieldDefaults(makeFinal = true,level = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 public class KeycloakConfig {
-    @Value("${keycloak.client-id}")
-    private String clientId;
-    @Value("${keycloak.client-secret}")
-    private String clientSecret;
-    @Value("${keycloak.user_management.registration.username}")
-    private String username;
-    @Value("${keycloak.user_management.registration.password}")
-    private String password;
-    @Value("${keycloak.user_management.registration.realm}")
-    private String realm;
-    @Value("${keycloak.server-url}")
-    private String serverUrl;
+    KeycloakProperties keycloakProperties;
 
     @Bean
     Keycloak keycloak() {
         return KeycloakBuilder.builder()
-                .serverUrl(serverUrl)
-                .clientId(clientId)
-                .clientSecret(clientSecret)
-                .username(username)
-                .password(password)
-                .realm(realm)
+                .serverUrl(keycloakProperties.server_url())
+                .clientId(keycloakProperties.client_id())
+                .clientSecret(keycloakProperties.client_secret())
+                .username(keycloakProperties.username())
+                .password(keycloakProperties.password())
+                .realm(keycloakProperties.realm())
                 .grantType(OAuth2Constants.PASSWORD)
                 .build();
     }

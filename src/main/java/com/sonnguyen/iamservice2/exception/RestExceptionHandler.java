@@ -129,4 +129,14 @@ public class RestExceptionHandler {
                 .message(e.getMessage())
                 .build();
     }
+    @ExceptionHandler(WorkbookValidationException.class)
+    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
+    public ResponseMessage handleAuthorizationException(WorkbookValidationException e) {
+        return ResponseMessage
+                .builder()
+                .status(ResponseMessageStatus.FAIL.status)
+                .content(e.messages)
+                .message(e.getMessage())
+                .build();
+    }
 }

@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -54,4 +55,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     @Modifying
     @Query(value = "update Account a set a.password=?2 where a.email=?1")
     void updatePasswordByEmail(String email, String encodedPassword);
+    @NonNull
+    List<Account> findAll(Specification<Account> specification);
 }

@@ -12,6 +12,7 @@ import com.sonnguyen.iamservice2.viewmodel.UserDetailGetVm;
 import com.sonnguyen.iamservice2.viewmodel.UserProfilePostVm;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -22,6 +23,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,7 +75,20 @@ public class UserManagementController {
         List<AccountSpecification> accountSpecification = parseRequestToSpecification(request);
         return accountServiceImpl.findAll(accountSpecification, PageRequest.of(page, size).withSort(sort));
     }
+    @GetMapping("/export-to-excel")
+    @PreAuthorize("hasPermission('USER','READ')")
+    public void exportToExcel(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        List<AccountSpecification> accountSpecification = parseRequestToSpecification(request);
+         accountServiceImpl.exportAccountsToExcel(accountSpecification,response);
+    }
 
+    @PostMapping("/import-from-excel")
+    public void importToExcel(@RequestPart MultipartFile file){
+        accountServiceImpl.importAccountsFromExcel(file);
+    }
     @PostMapping(value = "/{account_id}/delete")
     @PreAuthorize("hasPermission('USER','DELETE')")
     public ResponseEntity<?> deleteById(@PathVariable(name = "account_id") Long id) {
@@ -81,7 +96,7 @@ public class UserManagementController {
     }
 
     @PostMapping("/{account_id}/updateRole")
-    @PreAuthorize("hasPermission('USER','UPDATE')")
+    @PreAuthorize("hasPermission('ROLE','UPDATE')")
     public void updateRole(@PathVariable(name = "account_id") Long id, @RequestBody List<Long> roleIds) {
         accountRoleService.updateAccountRoles(id, roleIds);
     }
@@ -106,6 +121,11 @@ public class UserManagementController {
         accountServiceImpl.updatePasswordByEmail(changePasswordPostVm);
     }
 
+    @PostMapping("/update-picture")
+    @PreAuthorize("hasPermission('USER','UPDATE') or authentication.principal==#email")
+    public void updateProfilePicture(@RequestPart MultipartFile file,@RequestPart String email) {
+        accountServiceImpl.updateProfilePictureByEmail(file,email);
+    }
     private List<AccountSpecification> parseRequestToSpecification(HttpServletRequest request) {
         List<AccountSpecification> accountSpecifications = new ArrayList<>();
         Map<String, String[]> parameterMap = request.getParameterMap();

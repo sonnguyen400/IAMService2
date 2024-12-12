@@ -15,7 +15,7 @@ import org.hibernate.annotations.ColumnDefault;
 @Builder
 public class RolePermission extends AbstractAuditEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private Long permission_id;
     private Long role_id;

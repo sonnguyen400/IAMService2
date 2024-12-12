@@ -5,6 +5,7 @@ import com.sonnguyen.iamservice2.service.RoleService;
 import com.sonnguyen.iamservice2.viewmodel.RoleGetVm;
 import com.sonnguyen.iamservice2.viewmodel.RolePostVm;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +51,7 @@ public class RoleController {
 
     @PostMapping
     @PreAuthorize("hasPermission('ROLE','CREATE')")
-    public RoleGetVm createRoles(@RequestBody @NotEmpty RolePostVm roles) {
+    public RoleGetVm createRoles(@RequestBody @Valid RolePostVm roles) {
         return roleService.createRoles(roles);
     }
 
