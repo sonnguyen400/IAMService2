@@ -43,7 +43,7 @@ import java.util.*;
 public class AccountServiceImpl implements AccountService {
     AccountRepository accountRepository;
     PasswordEncoder passwordEncoder;
-
+    ValidatorFactory validatorFactory;
     public Account findById(Long id) {
         return accountRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Account not found"));
@@ -234,7 +234,6 @@ public class AccountServiceImpl implements AccountService {
         }
     }
     public  List<Account> parseAndValidateAccountsFromExcel(Workbook workbook) throws ParseException {
-        ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
         DateFormat dateFormat=new SimpleDateFormat("yyyy/MM/dd");
         Validator validator = validatorFactory.getValidator();
         Sheet sheet=workbook.getSheetAt(0);

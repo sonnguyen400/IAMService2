@@ -24,14 +24,13 @@ spring:
           jwk-set-uri: http://localhost:8080/realms/iam_service/protocol/openid-connect/certs
 default-idp: KEYCLOAK
 keycloak:
-  client-id: client
-  client-secret: L4cQEfVjcmoA4bzujcpwG23iYmP4iZhn
-  server-url: http://localhost:8080
-  user_management:
-    registration:
-      realm: "iam_service"
-      username: admin@mail.com
-      password: 123456
+  client_id: client
+  client_secret: L4cQEfVjcmoA4bzujcpwG23iYmP4iZhn
+  server_url: http://localhost:8080
+  realm: "iam_service"
+  username: admin@mail.com
+  password: 123456
+
 logging:
   level:
     org.springframework.security: trace

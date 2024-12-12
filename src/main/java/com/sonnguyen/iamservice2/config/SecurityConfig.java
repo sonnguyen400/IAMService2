@@ -29,7 +29,7 @@ public class SecurityConfig {
     public SecurityFilterChain configSecurityWithExternalIdp(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(request -> {
             request
-                    .requestMatchers("/api/v1/auth/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**","/oauth2/**","/login/**").permitAll()
+                    .requestMatchers("/test*","/api/v1/public/**","/api/v1/auth/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**","/oauth2/**","/login/**").permitAll()
                     .anyRequest().authenticated();
         })
                 .oauth2Login(customize->{
