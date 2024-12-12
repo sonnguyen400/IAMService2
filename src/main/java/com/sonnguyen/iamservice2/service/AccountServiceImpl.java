@@ -23,6 +23,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -42,6 +44,7 @@ import java.util.*;
 public class AccountServiceImpl implements AccountService {
     AccountRepository accountRepository;
     PasswordEncoder passwordEncoder;
+    PrivateStorageService privateStorageService;
     PublicStorageService publicStorageService;
     ValidatorFactory validatorFactory;
     public Account findById(Long id) {
@@ -216,7 +219,6 @@ public class AccountServiceImpl implements AccountService {
         cell9.setCellValue(account.getYearOfExperience());
     }
 
-
     public Specification<Account> combineSpecification(List<AccountSpecification> specifications){
         Specification<Account> combined = new AccountSpecification(new DynamicSearch("deleted", "false", DynamicSearch.Operator.EQUAL));
         for (AccountSpecification specification : specifications) {
@@ -226,9 +228,13 @@ public class AccountServiceImpl implements AccountService {
     }
 
     public void importAccountsFromExcel(MultipartFile file) {
+        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
+        String owner="anonymous";
+        if(authentication!=null) owner= (String) authentication.getPrincipal();
         try(XSSFWorkbook workbook=new XSSFWorkbook(file.getInputStream())) {
             List<Account> accounts=parseAndValidateAccountsFromExcel(workbook);
             accountRepository.saveAll(accounts);
+            privateStorageService.uploadAllFile(List.of(file),owner);
         } catch (IOException | ParseException e) {
             throw new RuntimeException(e);
         }
@@ -239,14 +245,13 @@ public class AccountServiceImpl implements AccountService {
         Sheet sheet=workbook.getSheetAt(0);
         Iterator<Row> rows=sheet.iterator();
         List<Account> accounts=new ArrayList<>();
+        List<WorkbookValidationMessage> workbookValidationMessageList=new ArrayList<>();
         rows.next();
-        int rowIndex=1;
         int colIndex=0;
-
-        try{
-            while (rows.hasNext()){
-                Row row=rows.next();
-                colIndex=1;
+        while (rows.hasNext()){
+            Row row=rows.next();
+            colIndex=1;
+            try{
                 String email=row.getCell(1).getStringCellValue();colIndex++;
                 String firstName=row.getCell(2).getStringCellValue();colIndex++;
                 String lastName=row.getCell(3).getStringCellValue();colIndex++;
@@ -272,23 +277,28 @@ public class AccountServiceImpl implements AccountService {
                         .build();
                 Set<ConstraintViolation<Account>> violations = validator.validate(account);
                 if (!violations.isEmpty()) {
-                    List<String> violationMessages=violations.stream().map(ConstraintViolation::getMessage).toList();
-                    throw WorkbookValidationException.create(rowIndex,colIndex,violationMessages);
+                    List<String> violationMessages=violations.stream().map(violation_->violation_.getPropertyPath().toString()+" "+violation_.getMessage()).toList();
+                    workbookValidationMessageList.add(WorkbookValidationMessage.builder()
+                            .message(violationMessages)
+                            .row(row.getRowNum()).build());
                 }
                 if(existedByEmail(account.getEmail())){
-                    throw WorkbookValidationException.create(rowIndex,1,List.of("Duplicated email"));
+                    workbookValidationMessageList.add(WorkbookValidationMessage.builder()
+                            .message(List.of("Duplicated email"))
+                            .row(row.getRowNum()).build());
                 }
                 accounts.add(account);
-                rowIndex++;
+            } catch (Exception e) {
+                workbookValidationMessageList.add(WorkbookValidationMessage.builder()
+                        .row(row.getRowNum())
+                        .column(colIndex)
+                        .message(List.of(e.getMessage())).build());
             }
-        } catch (Exception e) {
-            if(e instanceof WorkbookValidationException){
-                throw e;
-            }
-            throw WorkbookValidationException.create(rowIndex,colIndex,List.of(e.getMessage()));
+        }
+        if(!workbookValidationMessageList.isEmpty()){
+            throw new WorkbookValidationException(workbookValidationMessageList);
         }
         return accounts;
-
     }
     @Transactional
     public void updateProfilePictureByEmail(MultipartFile file,String email){

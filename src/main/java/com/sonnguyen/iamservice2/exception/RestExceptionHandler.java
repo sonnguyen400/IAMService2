@@ -135,7 +135,7 @@ public class RestExceptionHandler {
         return ResponseMessage
                 .builder()
                 .status(ResponseMessageStatus.FAIL.status)
-                .content(e.getViolations())
+                .content(e.messages)
                 .message(e.getMessage())
                 .build();
     }

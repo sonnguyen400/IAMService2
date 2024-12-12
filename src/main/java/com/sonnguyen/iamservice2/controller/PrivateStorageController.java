@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,7 +40,9 @@ public class PrivateStorageController {
         return storageService.deleteById(id);
     }
     @PostMapping("/upload")
-    ResponseEntity<?> uploadAllFile(@RequestPart(name = "file") List<MultipartFile> files, String owner){
+    ResponseEntity<?> uploadAllFile(@RequestPart(name = "file") List<MultipartFile> files, Authentication authentication){
+        String owner="anonymous";
+        if(authentication!=null) owner=(String)authentication.getPrincipal();
         return storageService.uploadAllFile(files, owner);
     }
 }
