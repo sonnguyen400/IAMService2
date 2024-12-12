@@ -96,7 +96,7 @@ public class UserManagementController {
     }
 
     @PostMapping("/{account_id}/updateRole")
-    @PreAuthorize("hasPermission('USER','UPDATE')")
+    @PreAuthorize("hasPermission('ROLE','UPDATE')")
     public void updateRole(@PathVariable(name = "account_id") Long id, @RequestBody List<Long> roleIds) {
         accountRoleService.updateAccountRoles(id, roleIds);
     }
